@@ -3,6 +3,7 @@
 Inventory management system converted from PHP/MySQL to Next.js + PostgreSQL (Neon), ready for Vercel deployment.
 
 ## Tech Stack
+
 - **Frontend**: Next.js 14 (App Router), React, CSS Modules
 - **Backend**: Next.js API Routes
 - **Database**: Neon (PostgreSQL serverless)
@@ -49,6 +50,7 @@ vercel
 ```
 
 When prompted, **add the environment variable**:
+
 - `DATABASE_URL` → paste your Neon connection string
 
 Or set it manually in **Vercel Dashboard → Project → Settings → Environment Variables**.
@@ -81,9 +83,9 @@ toymafia/
 
 ## API Endpoints
 
-| Method | URL | Description |
-|--------|-----|-------------|
-| GET | `/api/items` | Fetch items (supports `search`, `order_column`, `order_dir`, `start`, `length`) |
-| POST | `/api/items` | Create a new item |
-| PUT | `/api/items/:id` | Update an item |
-| DELETE | `/api/items/:id` | Delete an item |
+| Method | URL              | Description                                                                     |
+| ------ | ---------------- | ------------------------------------------------------------------------------- |
+| GET    | `/api/items`     | Fetch items (supports `search`, `order_column`, `order_dir`, `start`, `length`) |
+| POST   | `/api/items`     | Create a new item                                                               |
+| PUT    | `/api/items/:id` | Update an item                                                                  |
+| DELETE | `/api/items/:id` | Delete an item                                                                  |
