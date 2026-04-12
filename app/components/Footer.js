@@ -8,7 +8,7 @@ export default function Footer() {
       </div>
       <div className={styles.right}>
         Crafted <span className={styles.skull}>☠</span> by{' '}
-        <a href="https://Themesdesign.com/" target="_blank" rel="noopener noreferrer" className={styles.link}>
+        <a href="https://jon-raguini.vercel.app/" target="_blank" rel="noopener noreferrer" className={styles.link}>
           Zeraphm
         </a>
       </div>
