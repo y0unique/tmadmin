@@ -14,59 +14,100 @@ export async function GET(request) {
     const validColumns = [
       'item_id', 'item_name', 'item_description', 'item_location',
       'item_category', 'item_quality', 'item_price', 'item_quantity',
+      'item_image', 'item_status',
     ];
     const validDirs = ['ASC', 'DESC'];
-
     const safeColumn = validColumns.includes(orderColumn) ? orderColumn : 'item_id';
     const safeDir = validDirs.includes(orderDir.toUpperCase()) ? orderDir.toUpperCase() : 'ASC';
 
     let data;
-    let totalResult;
+    let countResult;
 
     if (search) {
       const pattern = `%${search}%`;
-      data = await sql`
-        SELECT * FROM tbl_items
-        WHERE
-          item_id::text ILIKE ${pattern} OR
-          item_name ILIKE ${pattern} OR
-          item_description ILIKE ${pattern} OR
-          item_location ILIKE ${pattern} OR
-          item_category ILIKE ${pattern} OR
-          item_quality ILIKE ${pattern} OR
-          item_price::text ILIKE ${pattern} OR
-          item_quantity::text ILIKE ${pattern}
-        ORDER BY ${sql(safeColumn)} ${sql.unsafe(safeDir)}
-        LIMIT ${length} OFFSET ${start}
-      `;
-      totalResult = await sql`
-        SELECT COUNT(*) as count FROM tbl_items
-        WHERE
-          item_id::text ILIKE ${pattern} OR
-          item_name ILIKE ${pattern} OR
-          item_description ILIKE ${pattern} OR
-          item_location ILIKE ${pattern} OR
-          item_category ILIKE ${pattern} OR
-          item_quality ILIKE ${pattern} OR
-          item_price::text ILIKE ${pattern} OR
-          item_quantity::text ILIKE ${pattern}
-      `;
+      if (safeDir === 'ASC') {
+        data = await sql`
+          SELECT * FROM tbl_items
+          WHERE
+            item_id::text ILIKE ${pattern} OR
+            item_name ILIKE ${pattern} OR
+            item_description ILIKE ${pattern} OR
+            item_location ILIKE ${pattern} OR
+            item_category ILIKE ${pattern} OR
+            item_quality ILIKE ${pattern} OR
+            item_price::text ILIKE ${pattern} OR
+            item_quantity::text ILIKE ${pattern} OR
+            item_status ILIKE ${pattern}
+          ORDER BY item_id ASC
+          LIMIT ${length} OFFSET ${start}
+        `;
+        countResult = await sql`
+          SELECT COUNT(*) as count FROM tbl_items
+          WHERE
+            item_id::text ILIKE ${pattern} OR
+            item_name ILIKE ${pattern} OR
+            item_description ILIKE ${pattern} OR
+            item_location ILIKE ${pattern} OR
+            item_category ILIKE ${pattern} OR
+            item_quality ILIKE ${pattern} OR
+            item_price::text ILIKE ${pattern} OR
+            item_quantity::text ILIKE ${pattern} OR
+            item_status ILIKE ${pattern}
+        `;
+      } else {
+        data = await sql`
+          SELECT * FROM tbl_items
+          WHERE
+            item_id::text ILIKE ${pattern} OR
+            item_name ILIKE ${pattern} OR
+            item_description ILIKE ${pattern} OR
+            item_location ILIKE ${pattern} OR
+            item_category ILIKE ${pattern} OR
+            item_quality ILIKE ${pattern} OR
+            item_price::text ILIKE ${pattern} OR
+            item_quantity::text ILIKE ${pattern} OR
+            item_status ILIKE ${pattern}
+          ORDER BY item_id DESC
+          LIMIT ${length} OFFSET ${start}
+        `;
+        countResult = await sql`
+          SELECT COUNT(*) as count FROM tbl_items
+          WHERE
+            item_id::text ILIKE ${pattern} OR
+            item_name ILIKE ${pattern} OR
+            item_description ILIKE ${pattern} OR
+            item_location ILIKE ${pattern} OR
+            item_category ILIKE ${pattern} OR
+            item_quality ILIKE ${pattern} OR
+            item_price::text ILIKE ${pattern} OR
+            item_quantity::text ILIKE ${pattern} OR
+            item_status ILIKE ${pattern}
+        `;
+      }
     } else {
-      data = await sql`
-        SELECT * FROM tbl_items
-        ORDER BY ${sql(safeColumn)} ${sql.unsafe(safeDir)}
-        LIMIT ${length} OFFSET ${start}
-      `;
-      totalResult = await sql`SELECT COUNT(*) as count FROM tbl_items`;
+      if (safeDir === 'ASC') {
+        data = await sql`
+          SELECT * FROM tbl_items
+          ORDER BY item_id ASC
+          LIMIT ${length} OFFSET ${start}
+        `;
+      } else {
+        data = await sql`
+          SELECT * FROM tbl_items
+          ORDER BY item_id DESC
+          LIMIT ${length} OFFSET ${start}
+        `;
+      }
+      countResult = await sql`SELECT COUNT(*) as count FROM tbl_items`;
     }
 
     return NextResponse.json({
       data,
-      recordsTotal: parseInt(totalResult[0].count),
+      recordsTotal: parseInt(countResult[0].count),
     });
   } catch (error) {
     console.error('GET /api/items error:', error);
-    return NextResponse.json({ error: 'Failed to fetch items' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to fetch items', details: error.message }, { status: 500 });
   }
 }
 
@@ -77,19 +118,20 @@ export async function POST(request) {
     const {
       item_name, item_description, item_location,
       item_category, item_quality, item_price, item_quantity,
+      item_image = 'n/a', item_status = 'active',
     } = body;
 
     const result = await sql`
       INSERT INTO tbl_items
-        (item_name, item_description, item_location, item_category, item_quality, item_price, item_quantity)
+        (item_name, item_description, item_location, item_category, item_quality, item_price, item_quantity, item_image, item_status)
       VALUES
-        (${item_name}, ${item_description}, ${item_location}, ${item_category}, ${item_quality}, ${item_price}, ${item_quantity})
+        (${item_name}, ${item_description}, ${item_location}, ${item_category}, ${item_quality}, ${item_price}, ${item_quantity}, ${item_image}, ${item_status})
       RETURNING *
     `;
 
     return NextResponse.json({ success: true, item: result[0] }, { status: 201 });
   } catch (error) {
     console.error('POST /api/items error:', error);
-    return NextResponse.json({ error: 'Failed to create item' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create item', details: error.message }, { status: 500 });
   }
 }
