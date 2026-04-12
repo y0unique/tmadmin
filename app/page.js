@@ -1,5 +1,6 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
+import Header from './components/Header';
 import ItemModal from './components/ItemModal';
 import DeleteModal from './components/DeleteModal';
 import Footer from './components/Footer';
@@ -7,15 +8,14 @@ import Sidebar from './components/Sidebar';
 import styles from './page.module.css';
 
 const COLUMNS = [
-  { key: 'item_id', label: 'ID' },
-  { key: 'item_name', label: 'Name' },
+  { key: 'item_id',          label: 'ID' },
+  { key: 'item_name',        label: 'Name' },
   { key: 'item_description', label: 'Description' },
-  { key: 'item_location', label: 'Location' },
-  { key: 'item_category', label: 'Category' },
-  { key: 'item_quality', label: 'Quality' },
-  { key: 'item_price', label: 'Price' },
-  { key: 'item_quantity', label: 'Qty' },
-  { key: 'item_status', label: 'Status' },
+  { key: 'item_location',    label: 'Location' },
+  { key: 'item_category',    label: 'Category' },
+  { key: 'item_quality',     label: 'Quality' },
+  { key: 'item_price',       label: 'Price' },
+  { key: 'item_quantity',    label: 'Qty' },
 ];
 
 const PAGE_SIZE = 10;
@@ -37,11 +37,8 @@ export default function Home() {
     setLoading(true);
     try {
       const params = new URLSearchParams({
-        search,
-        order_column: orderColumn,
-        order_dir: orderDir,
-        start: page * PAGE_SIZE,
-        length: PAGE_SIZE,
+        search, order_column: orderColumn, order_dir: orderDir,
+        start: page * PAGE_SIZE, length: PAGE_SIZE,
       });
       const res = await fetch(`/api/items?${params}`);
       const json = await res.json();
@@ -57,17 +54,8 @@ export default function Home() {
   useEffect(() => { fetchItems(); }, [fetchItems]);
 
   const handleSort = (col) => {
-    if (orderColumn === col) {
-      setOrderDir(d => d === 'ASC' ? 'DESC' : 'ASC');
-    } else {
-      setOrderColumn(col);
-      setOrderDir('ASC');
-    }
-    setPage(0);
-  };
-
-  const handleSearch = (e) => {
-    setSearch(e.target.value);
+    if (orderColumn === col) setOrderDir(d => d === 'ASC' ? 'DESC' : 'ASC');
+    else { setOrderColumn(col); setOrderDir('ASC'); }
     setPage(0);
   };
 
@@ -79,39 +67,17 @@ export default function Home() {
 
   const totalPages = Math.ceil(total / PAGE_SIZE);
   const from = total === 0 ? 0 : page * PAGE_SIZE + 1;
-  const to = Math.min((page + 1) * PAGE_SIZE, total);
+  const to   = Math.min((page + 1) * PAGE_SIZE, total);
 
   return (
     <div className={styles.layout}>
-
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
-
-      {/* Header */}
-      <header className={styles.header}>
-        <div className={styles.headerInner}>
-          <div className={styles.headerLeft}>
-            <button
-              className={styles.hamburger}
-              onClick={() => setSidebarOpen(o => !o)}
-              aria-label="Toggle menu"
-            >
-              <span className={`${styles.hamburgerLine} ${sidebarOpen ? styles.lineTop : ''}`} />
-              <span className={`${styles.hamburgerLine} ${sidebarOpen ? styles.lineMid : ''}`} />
-              <span className={`${styles.hamburgerLine} ${sidebarOpen ? styles.lineBot : ''}`} />
-            </button>
-            <div className={styles.brand}>
-              <span className={styles.brandDot} />
-              <span className={styles.brandName}>TOY MAFIA</span>
-              <span className={styles.brandSub}>ADMIN</span>
-            </div>
-          </div>
-          {/* Reserved for user avatar */}
-          <div className={styles.headerRight} />
-        </div>
-      </header>
+      <Header
+        onMenuToggle={() => setSidebarOpen(o => !o)}
+        menuOpen={sidebarOpen}
+      />
 
       <main className={styles.main}>
-
         {/* Toolbar */}
         <div className={styles.toolbar}>
           <div className={styles.toolbarLeft}>
@@ -119,13 +85,8 @@ export default function Home() {
               <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
               </svg>
-              <input
-                className={styles.searchInput}
-                type="text"
-                placeholder="Search items..."
-                value={search}
-                onChange={handleSearch}
-              />
+              <input className={styles.searchInput} type="text" placeholder="Search items..."
+                value={search} onChange={e => { setSearch(e.target.value); setPage(0); }} />
             </div>
             <span className={styles.totalBadge}>{total} ITEMS</span>
           </div>
@@ -144,7 +105,7 @@ export default function Home() {
               <tr>
                 {COLUMNS.map(col => (
                   <th key={col.key} onClick={() => handleSort(col.key)} className={styles.th}>
-                    <span>{col.label}</span>
+                    {col.label}
                     <span className={styles.sortArrow}>
                       {orderColumn === col.key ? (orderDir === 'ASC' ? ' ↑' : ' ↓') : ' ↕'}
                     </span>
@@ -155,15 +116,11 @@ export default function Home() {
             </thead>
             <tbody>
               {loading ? (
-                <tr>
-                  <td colSpan={COLUMNS.length + 1} className={styles.loading}>
-                    <span className={styles.loadingDots}><span /><span /><span /></span>
-                  </td>
-                </tr>
+                <tr><td colSpan={COLUMNS.length + 1} className={styles.loading}>
+                  <span className={styles.loadingDots}><span /><span /><span /></span>
+                </td></tr>
               ) : items.length === 0 ? (
-                <tr>
-                  <td colSpan={COLUMNS.length + 1} className={styles.empty}>No items found.</td>
-                </tr>
+                <tr><td colSpan={COLUMNS.length + 1} className={styles.empty}>No items found.</td></tr>
               ) : items.map((item, i) => (
                 <tr key={item.item_id} className={styles.tr} style={{ animationDelay: `${i * 30}ms` }}>
                   <td className={`${styles.td} ${styles.idCell}`}>{item.item_id}</td>
@@ -171,18 +128,9 @@ export default function Home() {
                   <td className={styles.td}>{item.item_description}</td>
                   <td className={styles.td}>{item.item_location}</td>
                   <td className={styles.td}>{item.item_category}</td>
-                  <td className={styles.td}>
-                    <span className={styles.qualityBadge}>{item.item_quality}</span>
-                  </td>
-                  <td className={`${styles.td} ${styles.priceCell}`}>
-                    ₱{parseFloat(item.item_price || 0).toLocaleString()}
-                  </td>
+                  <td className={styles.td}><span className={styles.qualityBadge}>{item.item_quality}</span></td>
+                  <td className={`${styles.td} ${styles.priceCell}`}>₱{parseFloat(item.item_price || 0).toLocaleString()}</td>
                   <td className={`${styles.td} ${styles.qtyCell}`}>{item.item_quantity}</td>
-                  <td className={styles.td}>
-                    <span className={`${styles.statusBadge} ${item.item_status === 'active' ? styles.statusActive : styles.statusInactive}`}>
-                      {item.item_status}
-                    </span>
-                  </td>
                   <td className={styles.td}>
                     <div className={styles.actions}>
                       <button className={styles.editBtn} onClick={() => openEdit(item)}>Edit</button>
@@ -201,43 +149,27 @@ export default function Home() {
             {total === 0 ? 'No results' : `Showing ${from}–${to} of ${total} items`}
           </span>
           <div className={styles.paginationControls}>
-            <button className={styles.pageBtn} onClick={() => setPage(0)}
-              disabled={page === 0} title="First">«</button>
-            <button className={styles.pageBtn} onClick={() => setPage(p => Math.max(0, p - 1))}
-              disabled={page === 0} title="Previous">‹ PREV</button>
+            <button className={styles.pageBtn} onClick={() => setPage(0)} disabled={page === 0}>«</button>
+            <button className={styles.pageBtn} onClick={() => setPage(p => Math.max(0, p - 1))} disabled={page === 0}>‹ PREV</button>
             <div className={styles.pageNumbers}>
               {[...Array(totalPages)].map((_, i) => {
-                if (i === 0 || i === totalPages - 1 || Math.abs(i - page) <= 1) {
-                  return (
-                    <button key={i}
-                      className={`${styles.pageNum} ${i === page ? styles.pageNumActive : ''}`}
-                      onClick={() => setPage(i)}>
-                      {i + 1}
-                    </button>
-                  );
-                }
-                if (Math.abs(i - page) === 2) {
+                if (i === 0 || i === totalPages - 1 || Math.abs(i - page) <= 1)
+                  return <button key={i} className={`${styles.pageNum} ${i === page ? styles.pageNumActive : ''}`} onClick={() => setPage(i)}>{i + 1}</button>;
+                if (Math.abs(i - page) === 2)
                   return <span key={i} className={styles.pageEllipsis}>…</span>;
-                }
                 return null;
               })}
             </div>
-            <button className={styles.pageBtn} onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
-              disabled={page >= totalPages - 1} title="Next">NEXT ›</button>
-            <button className={styles.pageBtn} onClick={() => setPage(totalPages - 1)}
-              disabled={page >= totalPages - 1} title="Last">»</button>
+            <button className={styles.pageBtn} onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))} disabled={page >= totalPages - 1}>NEXT ›</button>
+            <button className={styles.pageBtn} onClick={() => setPage(totalPages - 1)} disabled={page >= totalPages - 1}>»</button>
           </div>
         </div>
       </main>
 
       <Footer />
 
-      {modalOpen && (
-        <ItemModal item={editItem} onClose={closeModal} onSaved={handleSaved} />
-      )}
-      {deleteItem && (
-        <DeleteModal item={deleteItem} onClose={() => setDeleteItem(null)} onDeleted={handleDeleted} />
-      )}
+      {modalOpen && <ItemModal item={editItem} onClose={closeModal} onSaved={handleSaved} />}
+      {deleteItem && <DeleteModal item={deleteItem} onClose={() => setDeleteItem(null)} onDeleted={handleDeleted} />}
     </div>
   );
 }
