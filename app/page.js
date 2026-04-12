@@ -78,6 +78,14 @@ export default function Home() {
       />
 
       <main className={styles.main}>
+        {/* Page title */}
+        <div className={styles.pageHead}>
+          <div>
+            <h1 className={styles.pageTitle}>Inventory Items</h1>
+          </div>
+        </div>
+
+
         {/* Toolbar */}
         <div className={styles.toolbar}>
           <div className={styles.toolbarLeft}>

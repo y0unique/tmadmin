@@ -54,7 +54,6 @@ export default function LogsPage() {
           <div>
             <h1 className={styles.pageTitle}>Activity Logs</h1>
           </div>
-          <span className={styles.totalBadge}>{total} ENTRIES</span>
         </div>
 
         {/* Search */}
@@ -66,6 +65,7 @@ export default function LogsPage() {
             <input className={styles.searchInput} type="text" placeholder="Search logs..."
               value={search} onChange={e => { setSearch(e.target.value); setPage(0); }} />
           </div>
+          <span className={styles.totalBadge}>{total} ENTRIES</span>
         </div>
 
         {/* Table */}

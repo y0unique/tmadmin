@@ -109,7 +109,7 @@
   font-size: 0.8rem;
   font-weight: 600;
   color: var(--text);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.1em;
 }
 
 .avatar {
