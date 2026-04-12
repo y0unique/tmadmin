@@ -1,8 +1,9 @@
 'use client';
 import { useState, useEffect, useCallback } from 'react';
-import Image from 'next/image';
 import ItemModal from './components/ItemModal';
 import DeleteModal from './components/DeleteModal';
+import Footer from './components/Footer';
+import Sidebar from './components/Sidebar';
 import styles from './page.module.css';
 
 const COLUMNS = [
@@ -30,6 +31,7 @@ export default function Home() {
   const [modalOpen, setModalOpen] = useState(false);
   const [editItem, setEditItem] = useState(null);
   const [deleteItem, setDeleteItem] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const fetchItems = useCallback(async () => {
     setLoading(true);
@@ -81,34 +83,51 @@ export default function Home() {
 
   return (
     <div className={styles.layout}>
+
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+
+      {/* Header */}
       <header className={styles.header}>
         <div className={styles.headerInner}>
-          <div className={styles.brand}>
-            <Image src="/assets/favicon.png" alt="Toy Mafia" width={28} height={28}
-              onError={(e) => { e.target.style.display = 'none'; }} />
-            <span className={styles.brandDot} />
-            <span className={styles.brandName}>TOY MAFIA</span>
-            <span className={styles.brandSub}>ADMIN</span>
+          <div className={styles.headerLeft}>
+            <button
+              className={styles.hamburger}
+              onClick={() => setSidebarOpen(o => !o)}
+              aria-label="Toggle menu"
+            >
+              <span className={`${styles.hamburgerLine} ${sidebarOpen ? styles.lineTop : ''}`} />
+              <span className={`${styles.hamburgerLine} ${sidebarOpen ? styles.lineMid : ''}`} />
+              <span className={`${styles.hamburgerLine} ${sidebarOpen ? styles.lineBot : ''}`} />
+            </button>
+            <div className={styles.brand}>
+              <span className={styles.brandDot} />
+              <span className={styles.brandName}>TOY MAFIA</span>
+              <span className={styles.brandSub}>ADMIN</span>
+            </div>
           </div>
-          <div className={styles.headerStats}>
-            <span className={styles.statBadge}>{total} ITEMS</span>
-          </div>
+          {/* Reserved for user avatar */}
+          <div className={styles.headerRight} />
         </div>
       </header>
 
       <main className={styles.main}>
+
+        {/* Toolbar */}
         <div className={styles.toolbar}>
-          <div className={styles.searchWrap}>
-            <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
-            </svg>
-            <input
-              className={styles.searchInput}
-              type="text"
-              placeholder="Search items..."
-              value={search}
-              onChange={handleSearch}
-            />
+          <div className={styles.toolbarLeft}>
+            <div className={styles.searchWrap}>
+              <svg className={styles.searchIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="11" cy="11" r="8" /><path d="m21 21-4.35-4.35" />
+              </svg>
+              <input
+                className={styles.searchInput}
+                type="text"
+                placeholder="Search items..."
+                value={search}
+                onChange={handleSearch}
+              />
+            </div>
+            <span className={styles.totalBadge}>{total} ITEMS</span>
           </div>
           <button className={styles.addBtn} onClick={openAdd}>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" width="16" height="16">
@@ -118,6 +137,7 @@ export default function Home() {
           </button>
         </div>
 
+        {/* Table */}
         <div className={styles.tableWrap}>
           <table className={styles.table}>
             <thead>
@@ -180,77 +200,37 @@ export default function Home() {
           <span className={styles.paginationInfo}>
             {total === 0 ? 'No results' : `Showing ${from}–${to} of ${total} items`}
           </span>
-
           <div className={styles.paginationControls}>
-            {/* First */}
-            <button
-              className={styles.pageBtn}
-              onClick={() => setPage(0)}
-              disabled={page === 0}
-              title="First page"
-            >
-              «
-            </button>
-
-            {/* Previous */}
-            <button
-              className={styles.pageBtn}
-              onClick={() => setPage(p => Math.max(0, p - 1))}
-              disabled={page === 0}
-              title="Previous page"
-            >
-              ‹ PREV
-            </button>
-
-            {/* Page numbers */}
+            <button className={styles.pageBtn} onClick={() => setPage(0)}
+              disabled={page === 0} title="First">«</button>
+            <button className={styles.pageBtn} onClick={() => setPage(p => Math.max(0, p - 1))}
+              disabled={page === 0} title="Previous">‹ PREV</button>
             <div className={styles.pageNumbers}>
               {[...Array(totalPages)].map((_, i) => {
-                // Show first, last, current, and neighbors
-                if (
-                  i === 0 ||
-                  i === totalPages - 1 ||
-                  Math.abs(i - page) <= 1
-                ) {
+                if (i === 0 || i === totalPages - 1 || Math.abs(i - page) <= 1) {
                   return (
-                    <button
-                      key={i}
+                    <button key={i}
                       className={`${styles.pageNum} ${i === page ? styles.pageNumActive : ''}`}
-                      onClick={() => setPage(i)}
-                    >
+                      onClick={() => setPage(i)}>
                       {i + 1}
                     </button>
                   );
                 }
-                // Ellipsis
                 if (Math.abs(i - page) === 2) {
                   return <span key={i} className={styles.pageEllipsis}>…</span>;
                 }
                 return null;
               })}
             </div>
-
-            {/* Next */}
-            <button
-              className={styles.pageBtn}
-              onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
-              disabled={page >= totalPages - 1}
-              title="Next page"
-            >
-              NEXT ›
-            </button>
-
-            {/* Last */}
-            <button
-              className={styles.pageBtn}
-              onClick={() => setPage(totalPages - 1)}
-              disabled={page >= totalPages - 1}
-              title="Last page"
-            >
-              »
-            </button>
+            <button className={styles.pageBtn} onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+              disabled={page >= totalPages - 1} title="Next">NEXT ›</button>
+            <button className={styles.pageBtn} onClick={() => setPage(totalPages - 1)}
+              disabled={page >= totalPages - 1} title="Last">»</button>
           </div>
         </div>
       </main>
+
+      <Footer />
 
       {modalOpen && (
         <ItemModal item={editItem} onClose={closeModal} onSaved={handleSaved} />
