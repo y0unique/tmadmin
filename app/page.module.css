@@ -8,15 +8,6 @@
   padding: 2rem;
 }
 
-.pageHead {
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  margin-bottom: 1.5rem;
-  flex-wrap: wrap;
-  gap: 1rem;
-}
-
 /* TOOLBAR */
 .toolbar {
   display: flex;
@@ -221,4 +212,148 @@
 .pageEllipsis {
   color: var(--muted); font-family: var(--font-mono);
   font-size: 0.72rem; padding: 0 4px; user-select: none;
+}
+
+/* ── TOOLBAR RIGHT ─────────────────────────────────────────────────────────── */
+.toolbarRight { display: flex; align-items: center; gap: 8px; }
+
+.filterBtn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 10px 16px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  position: relative;
+}
+.filterBtn:hover { border-color: var(--accent); color: var(--accent); }
+.filterBtnActive { border-color: var(--accent); color: var(--accent); }
+
+.filterCount {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 17px; height: 17px;
+  background: var(--accent);
+  color: #000;
+  font-size: 0.6rem;
+  font-weight: 800;
+  border-radius: 50%;
+  line-height: 1;
+}
+
+/* ── FILTER PILLS ─────────────────────────────────────────────────────────── */
+.filterPills {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 1rem;
+}
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.05em;
+  color: var(--text);
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  padding: 4px 10px;
+  border-radius: 20px;
+}
+.pill button {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 0.6rem;
+  padding: 0;
+  line-height: 1;
+  transition: color 0.15s;
+}
+.pill button:hover { color: var(--accent2); }
+
+.clearAll {
+  background: transparent;
+  border: none;
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  padding: 4px 8px;
+  transition: color 0.15s;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.clearAll:hover { color: var(--accent2); }
+
+/* ── PAGE HEAD ─────────────────────────────────────────────────────────────── */
+.pageHead {
+  margin-bottom: 1.5rem;
+}
+.pageTitle {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+.pageSub {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted);
+  margin-top: 4px;
+  letter-spacing: 0.04em;
+}
+
+/* ── NON-SORTABLE TH ───────────────────────────────────────────────────────── */
+.thStatic {
+  padding: 12px 16px;
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--muted);
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+  cursor: default;
+  user-select: none;
+}
+
+/* ── EXPORT BUTTON ─────────────────────────────────────────────────────────── */
+.exportBtn {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: transparent;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 10px 16px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  animation: fadeIn 0.2s ease;
+}
+.exportBtn:hover {
+  background: var(--accent);
+  color: #000;
+  transform: translateY(-1px);
 }

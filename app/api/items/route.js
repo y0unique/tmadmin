@@ -15,92 +15,99 @@ async function writeLog(action) {
   }
 }
 
-// GET /api/items — only active items, with search/sort/pagination
+// GET /api/items — active items with search, quality filter, sort, pagination
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
-    const search  = searchParams.get('search') || '';
-    const orderColumn = searchParams.get('order_column') || 'item_id';
-    const orderDir    = searchParams.get('order_dir') || 'ASC';
-    const start  = parseInt(searchParams.get('start')  || '0');
-    const length = parseInt(searchParams.get('length') || '10');
+    const search   = searchParams.get('search')   || '';
+    const quality  = searchParams.get('quality')  || '';   // filter by quality
+    const sortBy   = searchParams.get('sort_by')  || '';   // item_dateAdded | item_lastUpdate | item_id etc
+    const sortDir  = searchParams.get('sort_dir') || 'ASC';
+    const start    = parseInt(searchParams.get('start')  || '0');
+    const length   = parseInt(searchParams.get('length') || '10');
 
     const validColumns = [
-      'item_id','item_name','item_description','item_location',
-      'item_category','item_quality','item_price','item_quantity',
+      'item_id', 'item_name', 'item_description', 'item_location',
+      'item_category', 'item_quality', 'item_price', 'item_quantity',
+      'item_dateAdded', 'item_lastUpdate',
     ];
-    const safeColumn = validColumns.includes(orderColumn) ? orderColumn : 'item_id';
-    const safeDir    = orderDir.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+    const safeColumn = validColumns.includes(sortBy) ? sortBy : 'item_id';
+    const safeDir    = sortDir.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
+
+    const searchPattern = search  ? `%${search}%`  : null;
+    const qualityFilter = quality || null;
 
     let data, countResult;
 
-    if (search) {
-      const pattern = `%${search}%`;
-      if (safeDir === 'ASC') {
-        data = await sql`
-          SELECT * FROM tbl_items
-          WHERE item_status = 'active' AND (
-            item_id::text ILIKE ${pattern} OR
-            item_name ILIKE ${pattern} OR
-            item_description ILIKE ${pattern} OR
-            item_location ILIKE ${pattern} OR
-            item_category ILIKE ${pattern} OR
-            item_quality ILIKE ${pattern} OR
-            item_price::text ILIKE ${pattern} OR
-            item_quantity::text ILIKE ${pattern}
+    if (safeDir === 'ASC') {
+      data = await sql`
+        SELECT * FROM tbl_items
+        WHERE item_status = 'active'
+          AND (${qualityFilter}::text IS NULL OR item_quality = ${qualityFilter})
+          AND (
+            ${searchPattern}::text IS NULL OR
+            item_id::text    ILIKE ${searchPattern || ''} OR
+            item_name        ILIKE ${searchPattern || ''} OR
+            item_description ILIKE ${searchPattern || ''} OR
+            item_location    ILIKE ${searchPattern || ''} OR
+            item_category    ILIKE ${searchPattern || ''} OR
+            item_quality     ILIKE ${searchPattern || ''} OR
+            item_price::text ILIKE ${searchPattern || ''} OR
+            item_quantity::text ILIKE ${searchPattern || ''}
           )
-          ORDER BY item_id ASC
-          LIMIT ${length} OFFSET ${start}
-        `;
-      } else {
-        data = await sql`
-          SELECT * FROM tbl_items
-          WHERE item_status = 'active' AND (
-            item_id::text ILIKE ${pattern} OR
-            item_name ILIKE ${pattern} OR
-            item_description ILIKE ${pattern} OR
-            item_location ILIKE ${pattern} OR
-            item_category ILIKE ${pattern} OR
-            item_quality ILIKE ${pattern} OR
-            item_price::text ILIKE ${pattern} OR
-            item_quantity::text ILIKE ${pattern}
-          )
-          ORDER BY item_id DESC
-          LIMIT ${length} OFFSET ${start}
-        `;
-      }
-      const p = `%${search}%`;
+        ORDER BY item_id ASC
+        LIMIT ${length} OFFSET ${start}
+      `;
       countResult = await sql`
         SELECT COUNT(*) as count FROM tbl_items
-        WHERE item_status = 'active' AND (
-          item_id::text ILIKE ${p} OR
-          item_name ILIKE ${p} OR
-          item_description ILIKE ${p} OR
-          item_location ILIKE ${p} OR
-          item_category ILIKE ${p} OR
-          item_quality ILIKE ${p} OR
-          item_price::text ILIKE ${p} OR
-          item_quantity::text ILIKE ${p}
-        )
+        WHERE item_status = 'active'
+          AND (${qualityFilter}::text IS NULL OR item_quality = ${qualityFilter})
+          AND (
+            ${searchPattern}::text IS NULL OR
+            item_id::text    ILIKE ${searchPattern || ''} OR
+            item_name        ILIKE ${searchPattern || ''} OR
+            item_description ILIKE ${searchPattern || ''} OR
+            item_location    ILIKE ${searchPattern || ''} OR
+            item_category    ILIKE ${searchPattern || ''} OR
+            item_quality     ILIKE ${searchPattern || ''} OR
+            item_price::text ILIKE ${searchPattern || ''} OR
+            item_quantity::text ILIKE ${searchPattern || ''}
+          )
       `;
     } else {
-      if (safeDir === 'ASC') {
-        data = await sql`
-          SELECT * FROM tbl_items
-          WHERE item_status = 'active'
-          ORDER BY item_id ASC
-          LIMIT ${length} OFFSET ${start}
-        `;
-      } else {
-        data = await sql`
-          SELECT * FROM tbl_items
-          WHERE item_status = 'active'
-          ORDER BY item_id DESC
-          LIMIT ${length} OFFSET ${start}
-        `;
-      }
+      data = await sql`
+        SELECT * FROM tbl_items
+        WHERE item_status = 'active'
+          AND (${qualityFilter}::text IS NULL OR item_quality = ${qualityFilter})
+          AND (
+            ${searchPattern}::text IS NULL OR
+            item_id::text    ILIKE ${searchPattern || ''} OR
+            item_name        ILIKE ${searchPattern || ''} OR
+            item_description ILIKE ${searchPattern || ''} OR
+            item_location    ILIKE ${searchPattern || ''} OR
+            item_category    ILIKE ${searchPattern || ''} OR
+            item_quality     ILIKE ${searchPattern || ''} OR
+            item_price::text ILIKE ${searchPattern || ''} OR
+            item_quantity::text ILIKE ${searchPattern || ''}
+          )
+        ORDER BY item_id DESC
+        LIMIT ${length} OFFSET ${start}
+      `;
       countResult = await sql`
-        SELECT COUNT(*) as count FROM tbl_items WHERE item_status = 'active'
+        SELECT COUNT(*) as count FROM tbl_items
+        WHERE item_status = 'active'
+          AND (${qualityFilter}::text IS NULL OR item_quality = ${qualityFilter})
+          AND (
+            ${searchPattern}::text IS NULL OR
+            item_id::text    ILIKE ${searchPattern || ''} OR
+            item_name        ILIKE ${searchPattern || ''} OR
+            item_description ILIKE ${searchPattern || ''} OR
+            item_location    ILIKE ${searchPattern || ''} OR
+            item_category    ILIKE ${searchPattern || ''} OR
+            item_quality     ILIKE ${searchPattern || ''} OR
+            item_price::text ILIKE ${searchPattern || ''} OR
+            item_quantity::text ILIKE ${searchPattern || ''}
+          )
       `;
     }
 
