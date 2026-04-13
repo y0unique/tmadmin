@@ -106,3 +106,94 @@
   letter-spacing: 0.1em;
   opacity: 0.5;
 }
+
+/* ── DROPDOWN GROUP ─────────────────────────────────────────────────────────── */
+.navGroup {
+  display: flex;
+  flex-direction: column;
+}
+
+.navGroupBtn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-radius: 2px;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 400;
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  width: 100%;
+  text-align: left;
+  font-family: var(--font-display);
+}
+
+.navGroupBtn:hover {
+  background: var(--surface2);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.navGroupBtnActive {
+  background: var(--surface2);
+  color: var(--accent) !important;
+  border-color: var(--border) !important;
+}
+
+.navChevron {
+  color: var(--muted);
+  transition: transform 0.2s;
+  margin-left: auto;
+  flex-shrink: 0;
+}
+
+.navChevronOpen {
+  transform: rotate(180deg);
+}
+
+.navSubList {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  margin: 2px 0 2px 30px;
+  padding-left: 12px;
+  border-left: 1px solid var(--border);
+}
+
+.navSubItem {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px;
+  border-radius: 2px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  text-decoration: none;
+  transition: background 0.15s, color 0.15s;
+}
+
+.navSubItem:hover {
+  background: var(--surface2);
+  color: var(--text);
+}
+
+.navSubItemActive {
+  color: var(--accent) !important;
+  font-weight: 600;
+}
+
+.subDot {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.navSubItemActive .subDot {
+  background: var(--accent);
+}
