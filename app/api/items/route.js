@@ -21,7 +21,7 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const search   = searchParams.get('search')   || '';
     const quality  = searchParams.get('quality')  || '';   // filter by quality
-    const sortBy   = searchParams.get('sort_by')  || '';   // item_dateAdded | item_lastUpdate | item_id etc
+    const sortBy   = searchParams.get('sort_by')  || '';   // "item_dateAdded" | "item_lastUpdate" | item_id etc
     const sortDir  = searchParams.get('sort_dir') || 'ASC';
     const start    = parseInt(searchParams.get('start')  || '0');
     const length   = parseInt(searchParams.get('length') || '10');
@@ -29,7 +29,7 @@ export async function GET(request) {
     const validColumns = [
       'item_id', 'item_name', 'item_description', 'item_location',
       'item_category', 'item_quality', 'item_price', 'item_quantity',
-      'item_dateAdded', 'item_lastUpdate',
+      '""item_dateAdded""', '""item_lastUpdate""',
     ];
     const safeColumn = validColumns.includes(sortBy) ? sortBy : 'item_id';
     const safeDir    = sortDir.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
