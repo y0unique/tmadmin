@@ -1,5 +1,6 @@
 import './globals.css';
 import { ThemeProvider } from './context/ThemeContext';
+import { ToastProvider } from './components/Toast';
 
 export const metadata = {
   title: 'Toy Mafia Admin',
@@ -16,7 +17,9 @@ export default function RootLayout({ children }) {
     <html lang="en" data-theme="dark">
       <body>
         <ThemeProvider>
-          {children}
+          <ToastProvider>
+            {children}
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

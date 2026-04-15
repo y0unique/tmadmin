@@ -357,3 +357,57 @@
   color: #000;
   transform: translateY(-1px);
 }
+
+/* ── CLICKABLE NAME ─────────────────────────────────────────────────────────── */
+.nameBtn {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-family: var(--font-display);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  text-align: left;
+  transition: color 0.15s;
+  text-decoration: underline;
+  text-decoration-color: transparent;
+  text-underline-offset: 3px;
+}
+.nameBtn:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+/* ── DELETE BUTTON IN TABLE ─────────────────────────────────────────────────── */
+.deleteBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 4px 12px;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  font-weight: 500;
+  background: transparent;
+  border: 1px solid #5a1a1a;
+  color: #ff6b6b;
+  cursor: pointer;
+  border-radius: 2px;
+  transition: all 0.15s;
+  min-width: 70px;
+}
+.deleteBtn:hover:not(:disabled) { background: var(--accent2); color: #fff; border-color: var(--accent2); }
+.deleteBtn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── DELETING ROW STATE ─────────────────────────────────────────────────────── */
+.trDeleting { opacity: 0.5; pointer-events: none; }
+.deletingSpinner {
+  display: inline-block;
+  width: 10px; height: 10px;
+  border: 2px solid rgba(255,107,107,0.3);
+  border-top-color: #ff6b6b;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
