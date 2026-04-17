@@ -21,21 +21,27 @@ export async function PUT(request, { params }) {
     const { id } = params;
     const body = await request.json();
     const {
-      item_name, item_description, item_location,
-      item_category, item_quality, item_price, item_quantity,
-      item_image = 'n/a',
+      item_name, item_title, item_type, item_description, item_location,
+      item_category, item_quality, item_size, item_sticker,
+      item_acqprice, item_srp, item_quantity, item_image = 'n/a',
     } = body;
 
     const result = await sql`
       UPDATE tbl_items SET
         item_name        = ${item_name},
+        item_title       = ${item_title || ''},
+        item_type        = ${item_type  || ''},
         item_description = ${item_description},
         item_location    = ${item_location},
         item_category    = ${item_category},
         item_quality     = ${item_quality},
-        item_price       = ${item_price},
+        item_size        = ${item_size    || ''},
+        item_sticker     = ${item_sticker || ''},
+        item_acqprice    = ${item_acqprice || 0},
+        item_srp         = ${item_srp      || 0},
         item_quantity    = ${item_quantity},
-        item_image       = ${item_image}
+        item_image       = ${item_image},
+        item_lastUpdated = CURRENT_TIMESTAMP
       WHERE item_id = ${id}
       RETURNING *
     `;

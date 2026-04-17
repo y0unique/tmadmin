@@ -12,14 +12,14 @@ import styles from './page.module.css';
 const COLUMNS = [
   { key: 'item_id',       label: 'ID' },
   { key: 'item_name',     label: 'Name' },
+  { key: 'item_type',     label: 'Type' },
   { key: 'item_category', label: 'Category' },
   { key: 'item_quality',  label: 'Quality' },
-  { key: 'item_price',    label: 'Price' },
   { key: 'item_quantity', label: 'Qty' },
 ];
 
 const PAGE_SIZE = 10;
-const DEFAULT_FILTERS = { quality: '', sortBy: '', sortDir: 'ASC', dateFrom: '', dateTo: '' };
+const DEFAULT_FILTERS = { quality: '', category: '', sortBy: '', sortDir: 'ASC', dateFrom: '', dateTo: '' };
 
 export default function Home() {
   const [items, setItems]         = useState([]);
@@ -50,7 +50,8 @@ export default function Home() {
         order_dir:    filters.sortDir || orderDir,
         start:        page * PAGE_SIZE,
         length:       PAGE_SIZE,
-        quality:      filters.quality || '',
+        quality:      filters.quality  || '',
+        category:     filters.category || '',
         sort_by:      filters.sortBy  || '',
         sort_dir:     filters.sortDir || 'ASC',
       });
@@ -89,6 +90,7 @@ export default function Home() {
 
   const activeFilterCount = [
     filters.quality,
+    filters.category,
     filters.sortBy,
     filters.dateFrom && filters.dateTo,
   ].filter(Boolean).length;
@@ -162,6 +164,11 @@ export default function Home() {
                 <button onClick={() => handleFilterChange({ ...filters, quality: '' })}>✕</button>
               </span>
             )}
+            {filters.category && (
+              <span className={styles.pill}>Category: {filters.category}
+                <button onClick={() => handleFilterChange({ ...filters, category: '' })}>✕</button>
+              </span>
+            )}
             {filters.sortBy && (
               <span className={styles.pill}>
                 Sort: {filters.sortBy === 'item_dateAdded' ? 'Date Added' : 'Last Updated'} {filters.sortDir}
@@ -201,17 +208,14 @@ export default function Home() {
                   style={{ animationDelay: `${i * 30}ms` }}>
                   <td className={`${styles.td} ${styles.idCell}`}>{item.item_id}</td>
                   <td className={styles.td}>
-                    {/* Clickable name */}
                     <button className={styles.nameBtn} onClick={() => openView(item)}>
                       {item.item_name}
                     </button>
                   </td>
+                  <td className={styles.td}>{item.item_type}</td>
                   <td className={styles.td}>{item.item_category}</td>
                   <td className={styles.td}>
                     <span className={styles.qualityBadge}>{item.item_quality}</span>
-                  </td>
-                  <td className={`${styles.td} ${styles.priceCell}`}>
-                    ₱{parseFloat(item.item_price || 0).toLocaleString()}
                   </td>
                   <td className={`${styles.td} ${styles.qtyCell}`}>{item.item_quantity}</td>
                   <td className={styles.td}>

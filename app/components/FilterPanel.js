@@ -2,13 +2,20 @@
 import { useEffect, useRef } from 'react';
 import styles from './FilterPanel.module.css';
 
-const QUALITIES = ['Mint', 'Excellent', 'Good', 'Fair', 'Poor'];
+const QUALITIES = [
+  "Collector's Grade", 'Standard Grade', 'Substandard Grade', 'Damaged Grade',
+];
+
+const CATEGORIES = [
+  'N/A', 'ANIMATION', 'GAMES', 'MOVIES', 'NONE', 'STAGES', 'ROCKS',
+  'FOOTBALL', 'PROTECTOR', 'TELEVISION', 'COMIC COVER', 'RACING',
+];
 
 const SORT_OPTIONS = [
   { value: 'item_dateAdded-ASC',    label: 'Date Added — Oldest first' },
   { value: 'item_dateAdded-DESC',   label: 'Date Added — Newest first' },
-  { value: 'item_lastUpdate-ASC',   label: 'Last Updated — Oldest first' },
-  { value: 'item_lastUpdate-DESC',  label: 'Last Updated — Newest first' },
+  { value: 'item_lastUpdated-ASC',   label: 'Last Updated — Oldest first' },
+  { value: 'item_lastUpdated-DESC',  label: 'Last Updated — Newest first' },
 ];
 
 export default function FilterPanel({ open, onClose, filters, onChange }) {
@@ -24,7 +31,7 @@ export default function FilterPanel({ open, onClose, filters, onChange }) {
   }, [open, onClose]);
 
   const hasDateRange = filters.dateFrom && filters.dateTo;
-  const hasActiveFilters = filters.quality || filters.sortBy || hasDateRange;
+  const hasActiveFilters = filters.quality || filters.category || filters.sortBy || hasDateRange;
 
   const handleQuality = (q) => {
     onChange({ ...filters, quality: filters.quality === q ? '' : q });
@@ -40,7 +47,7 @@ export default function FilterPanel({ open, onClose, filters, onChange }) {
   };
 
   const handleReset = () => {
-    onChange({ quality: '', sortBy: '', sortDir: 'ASC', dateFrom: '', dateTo: '' });
+    onChange({ quality: '', category: '', sortBy: '', sortDir: 'ASC', dateFrom: '', dateTo: '' });
   };
 
   const handleExport = () => {
@@ -81,6 +88,22 @@ export default function FilterPanel({ open, onClose, filters, onChange }) {
         </div>
 
         <div className={styles.panelBody}>
+
+          {/* Category */}
+          <div className={styles.section}>
+            <label className={styles.sectionLabel}>Category</label>
+            <div className={styles.qualityGrid}>
+              {CATEGORIES.map(c => (
+                <button
+                  key={c}
+                  className={`${styles.qualityBtn} ${filters.category === c ? styles.qualityBtnActive : ''}`}
+                  onClick={() => onChange({ ...filters, category: filters.category === c ? '' : c })}
+                >
+                  {c}
+                </button>
+              ))}
+            </div>
+          </div>
 
           {/* Quality */}
           <div className={styles.section}>

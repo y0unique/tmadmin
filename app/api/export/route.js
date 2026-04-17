@@ -1,6 +1,17 @@
 import { NextResponse } from 'next/server';
 import sql from '../../lib/db';
 
+async function writeLog(action) {
+  try {
+    const now = new Date();
+    const date = now.toISOString().split('T')[0];
+    const time = now.toTimeString().split(' ')[0];
+    const { neon } = await import('@neondatabase/serverless');
+    const sql = neon(process.env.DATABASE_URL);
+    await sql`INSERT INTO timelogtbl (log_action, log_date, log_time, log_status) VALUES (${action}, ${date}, ${time}, 'active')`;
+  } catch (e) { console.error('Log write failed:', e.message); }
+}
+
 // GET /api/export — returns CSV of filtered active items
 export async function GET(request) {
   try {
@@ -12,7 +23,7 @@ export async function GET(request) {
     const dateFrom  = searchParams.get('date_from') || '';
     const dateTo    = searchParams.get('date_to')   || '';
 
-    const validSortCols = ['"item_dateAdded"', '"item_lastUpdate"'];
+    const validSortCols = ['"item_dateAdded"', '"item_lastUpdatedd"'];
     const safeSort = validSortCols.includes(sortBy) ? sortBy : '"item_dateAdded"';
     const safeDir  = sortDir.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
 
@@ -31,8 +42,8 @@ export async function GET(request) {
       data = await sql`
         SELECT
           item_id, item_name, item_description, item_location,
-          item_category, item_quality, item_price, item_quantity,
-          item_image, item_status, "item_dateAdded", "item_lastUpdate"
+          item_category, item_quality, item_srp, item_quantity,
+          item_image, item_status, "item_dateAdded", "item_lastUpdatedd"
         FROM tbl_items
         WHERE item_status = 'active'
           AND (${qualityFilter}::text IS NULL OR item_quality = ${qualityFilter})
@@ -53,8 +64,8 @@ export async function GET(request) {
       data = await sql`
         SELECT
           item_id, item_name, item_description, item_location,
-          item_category, item_quality, item_price, item_quantity,
-          item_image, item_status, "item_dateAdded", "item_lastUpdate"
+          item_category, item_quality, item_srp, item_quantity,
+          item_image, item_status, "item_dateAdded", "item_lastUpdatedd"
         FROM tbl_items
         WHERE item_status = 'active'
           AND (${qualityFilter}::text IS NULL OR item_quality = ${qualityFilter})
@@ -75,9 +86,9 @@ export async function GET(request) {
 
     // Build CSV
     const headers = [
-      'ID', 'Name', 'Description', 'Location', 'Category',
-      'Quality', 'Price', 'Quantity', 'Image', 'Status',
-      'Date Added', 'Last Updated',
+      'ID', 'Name', 'Title', 'Type', 'Description', 'Location', 'Category',
+      'Quality', 'Size', 'Sticker', 'Acq Price', 'SRP', 'Quantity',
+      'Image', 'Status', 'Date Added', 'Last Updated',
     ];
 
     const escape = (val) => {
@@ -98,16 +109,19 @@ export async function GET(request) {
       item.item_location,
       item.item_category,
       item.item_quality,
-      item.item_price,
+      item.item_srp,
       item.item_quantity,
       item.item_image,
       item.item_status,
       formatDate(item.item_dateAdded),
-      formatDate(item.item_lastUpdate),
+      formatDate(item.item_lastUpdated),
     ].map(escape).join(','));
 
     const csv = [headers.join(','), ...rows].join('\n');
     const filename = `toymafia_inventory_${dateFrom}_to_${dateTo}.csv`;
+
+    // Log the export
+    await writeLog(`CSV Export downloaded: ${data.length} items (${dateFrom} to ${dateTo})${quality ? ' | Quality: ' + quality : ''}`);
 
     return new NextResponse(csv, {
       status: 200,

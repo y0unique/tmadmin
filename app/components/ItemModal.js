@@ -3,51 +3,102 @@ import { useState, useEffect } from 'react';
 import { useToast } from './Toast';
 import styles from './ItemModal.module.css';
 
+// ── Dropdown options ──────────────────────────────────────────────────────────
+const ITEM_TYPES = ['N/A', 'Funko', 'Disposable'];
+
+const ITEM_CATEGORIES = [
+  'N/A', 'ANIMATION', 'GAMES', 'MOVIES', 'NONE', 'STAGES',
+  'ROCKS', 'FOOTBALL', 'PROTECTOR', 'TELEVISION', 'COMIC COVER', 'RACING',
+];
+
+const ITEM_QUALITIES = [
+  'N/A', "Collector's Grade", 'Standard Grade', 'Substandard Grade', 'Damaged Grade',
+];
+
+const ITEM_SIZES = [
+  'N/A', 'REGULAR 4"', 'SUPER 6"', 'JUMBO 10"', 'PLUS', 'DELUXE',
+  'MOMENT', 'BITTY', 'KEYCHAIN', '2PACK', 'COVER', 'PREMIUM', 'POSTER',
+];
+
+const ITEM_STICKERS = [
+  'N/A', 'SPECIAL', 'NONE', 'BIG APPLE', 'FUNIMATION', 'SHARED',
+  'HOTTOPIC', 'EE', 'AAA', 'BOXLUNCH', 'CHALICE', 'FUNKO', 'CRUNCHY ROLL',
+];
+
 const EMPTY = {
-  item_name: '', item_description: '', item_location: '',
-  item_category: '', item_quality: '', item_price: '',
-  item_quantity: '', item_image: 'n/a',
+  item_name: '', item_title: '', item_type: 'N/A', item_description: '',
+  item_location: '', item_category: 'N/A', item_quality: 'N/A',
+  item_size: 'N/A', item_sticker: 'N/A',
+  item_acqprice: '', item_srp: '', item_quantity: '', item_image: 'n/a',
 };
 
-const QUALITY_OPTIONS = ['Mint', 'Excellent', 'Good', 'Fair', 'Poor', 'Damaged'];
+// Convert Google Drive share link to direct image URL
+function convertDriveLink(url) {
+  if (!url) return url;
+  // Handle: https://drive.google.com/file/d/FILE_ID/view
+  const match = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
+  if (match) return `https://drive.google.com/uc?export=view&id=${match[1]}`;
+  // Handle: https://drive.google.com/open?id=FILE_ID
+  const match2 = url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  if (match2) return `https://drive.google.com/uc?export=view&id=${match2[1]}`;
+  return url;
+}
 
-// View-only field component
 function ViewField({ label, value, wide }) {
   return (
     <div className={`${styles.field} ${wide ? styles.fieldWide : ''}`}>
       <label className={styles.label}>{label}</label>
-      <div className={styles.viewValue}>{value || <span className={styles.empty}>—</span>}</div>
+      <div className={styles.viewValue}>{value || <span className={styles.emptyVal}>—</span>}</div>
     </div>
+  );
+}
+
+function Select({ name, value, onChange, options }) {
+  return (
+    <select className={styles.input} name={name} value={value} onChange={onChange}>
+      {options.map(o => <option key={o} value={o}>{o}</option>)}
+    </select>
   );
 }
 
 export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
   const { toast } = useToast();
-  const isAdd     = mode === 'add';
-  const [locked, setLocked]   = useState(!isAdd); // view mode = locked
-  const [form, setForm]       = useState(EMPTY);
-  const [saving, setSaving]   = useState(false);
+  const isAdd   = mode === 'add';
+  const [locked, setLocked] = useState(!isAdd);
+  const [form, setForm]     = useState(EMPTY);
+  const [saving, setSaving] = useState(false);
+  const [imgSrc, setImgSrc] = useState('');
 
   useEffect(() => {
     if (item) {
-      setForm({
+      const f = {
         item_name:        item.item_name        || '',
+        item_title:       item.item_title       || '',
+        item_type:        item.item_type        || 'N/A',
         item_description: item.item_description || '',
         item_location:    item.item_location    || '',
-        item_category:    item.item_category    || '',
-        item_quality:     item.item_quality     || '',
-        item_price:       item.item_price       || '',
-        item_quantity:    item.item_quantity     || '',
-        item_image:       item.item_image        || 'n/a',
-      });
+        item_category:    item.item_category    || 'N/A',
+        item_quality:     item.item_quality     || 'N/A',
+        item_size:        item.item_size        || 'N/A',
+        item_sticker:     item.item_sticker     || 'N/A',
+        item_acqprice:    item.item_acqprice    || '',
+        item_srp:         item.item_srp         || '',
+        item_quantity:    item.item_quantity    || '',
+        item_image:       item.item_image       || 'n/a',
+      };
+      setForm(f);
+      setImgSrc(convertDriveLink(item.item_image));
     } else {
       setForm(EMPTY);
+      setImgSrc('');
     }
     setLocked(!isAdd);
   }, [item, isAdd]);
 
   const handleChange = (e) => {
-    setForm(f => ({ ...f, [e.target.name]: e.target.value }));
+    const { name, value } = e.target;
+    setForm(f => ({ ...f, [name]: value }));
+    if (name === 'item_image') setImgSrc(convertDriveLink(value));
   };
 
   const handleSubmit = async (e) => {
@@ -56,14 +107,15 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
     try {
       const url    = isAdd ? '/api/items' : `/api/items/${item.item_id}`;
       const method = isAdd ? 'POST' : 'PUT';
+      const payload = { ...form, item_image: convertDriveLink(form.item_image) };
       const res    = await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || 'Failed to save');
-      toast({ message: isAdd ? 'Item added successfully!' : 'Item updated successfully!', type: 'success' });
+      toast({ message: isAdd ? 'Item added!' : 'Item updated!', type: 'success' });
       onSaved();
     } catch (err) {
       toast({ message: err.message, type: 'error' });
@@ -72,9 +124,11 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
     }
   };
 
+  const hasImage = imgSrc && imgSrc !== 'n/a';
+
   return (
     <div className={styles.overlay} onClick={onClose}>
-      <div className={styles.modal} onClick={e => e.stopPropagation()}>
+      <div className={`${styles.modal} ${hasImage ? styles.modalWide : ''}`} onClick={e => e.stopPropagation()}>
 
         {/* Header */}
         <div className={styles.modalHeader}>
@@ -82,32 +136,18 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
             <span className={`${styles.modalTag} ${!isAdd && locked ? styles.tagView : ''}`}>
               {isAdd ? 'NEW ITEM' : locked ? 'VIEWING' : 'EDITING'}
             </span>
-            <h2>{isAdd ? 'Add Item' : form.item_name || 'Item Details'}</h2>
+            <h2>{isAdd ? 'Add Item' : item?.item_name || 'Item Details'}</h2>
           </div>
           <div className={styles.modalHeaderRight}>
-            {/* Unlock/Lock toggle — only for existing items */}
             {!isAdd && (
               <button
                 className={`${styles.lockBtn} ${locked ? styles.lockBtnLocked : styles.lockBtnUnlocked}`}
                 onClick={() => setLocked(l => !l)}
-                title={locked ? 'Unlock to edit' : 'Lock editing'}
               >
                 {locked ? (
-                  <>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="14" height="14">
-                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-                    </svg>
-                    Unlock to Edit
-                  </>
+                  <><LockIcon /> Unlock to Edit</>
                 ) : (
-                  <>
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="14" height="14">
-                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                      <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
-                    </svg>
-                    Lock
-                  </>
+                  <><UnlockIcon /> Lock</>
                 )}
               </button>
             )}
@@ -115,122 +155,158 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
           </div>
         </div>
 
-        {/* Body */}
-        {locked && !isAdd ? (
-          // ── VIEW MODE ────────────────────────────────────────────
-          <div className={styles.viewBody}>
-            <div className={styles.viewGrid}>
-              <ViewField label="Item ID"     value={`#${item?.item_id}`} />
-              <ViewField label="Quality"     value={item?.item_quality} />
-              <ViewField label="Name"        value={item?.item_name} wide />
-              <ViewField label="Category"    value={item?.item_category} />
-              <ViewField label="Location"    value={item?.item_location} />
-              <ViewField label="Price"       value={item?.item_price ? `₱${parseFloat(item.item_price).toLocaleString()}` : '—'} />
-              <ViewField label="Quantity"    value={item?.item_quantity} />
-              <ViewField label="Description" value={item?.item_description} wide />
-            </div>
+        {/* Content wrapper - side by side if image exists */}
+        <div className={`${styles.contentWrap} ${hasImage ? styles.contentWithImage : ''}`}>
 
-            {/* Item image */}
-            {item?.item_image && item.item_image !== 'n/a' && (
-              <div className={styles.imageWrap}>
-                <label className={styles.label}>Image</label>
-                <img
-                  src={item.item_image}
-                  alt={item.item_name}
-                  className={styles.itemImage}
-                  onError={(e) => { e.target.style.display = 'none'; }}
-                />
+          {/* Main form / view */}
+          <div className={styles.formSide}>
+            {locked && !isAdd ? (
+              /* VIEW MODE */
+              <div className={styles.viewBody}>
+                <div className={styles.viewGrid}>
+                  <ViewField label="Quality"     value={item?.item_quality} />
+                  <ViewField label="Type"        value={item?.item_type} />
+                  <ViewField label="Name"        value={item?.item_name} wide />
+                  <ViewField label="Title"       value={item?.item_title} wide />
+                  <ViewField label="Category"    value={item?.item_category} />
+                  <ViewField label="Size"        value={item?.item_size} />
+                  <ViewField label="Location"    value={item?.item_location} />
+                  <ViewField label="Sticker"     value={item?.item_sticker} />
+                  <ViewField label="Acq. Price"  value={item?.item_acqprice ? `₱${parseFloat(item.item_acqprice).toLocaleString()}` : '—'} />
+                  <ViewField label="SRP"         value={item?.item_srp ? `₱${parseFloat(item.item_srp).toLocaleString()}` : '—'} />
+                  <ViewField label="Quantity"    value={item?.item_quantity} />
+                  <ViewField label="Description" value={item?.item_description} wide />
+                </div>
+                <div className={styles.viewMeta}>
+                  {item?.item_dateAdded   && <span>Added: {new Date(item.item_dateAdded).toLocaleString('en-PH')}</span>}
+                  {item?.item_lastUpdated && <span>Updated: {new Date(item.item_lastUpdated).toLocaleString('en-PH')}</span>}
+                </div>
               </div>
-            )}
 
-            <div className={styles.viewMeta}>
-              {item?.item_dateAdded && (
-                <span>Added: {new Date(item.item_dateAdded).toLocaleString('en-PH')}</span>
-              )}
-              {item?.item_lastUpdate && (
-                <span>Updated: {new Date(item.item_lastUpdate).toLocaleString('en-PH')}</span>
-              )}
-            </div>
+            ) : (
+              /* EDIT / ADD MODE */
+              <form onSubmit={handleSubmit} className={styles.form} id="itemForm">
+                <div className={styles.row}>
+                  <div className={styles.field}>
+                    <label className={styles.label}>Name <span className={styles.req}>*</span></label>
+                    <input className={styles.input} name="item_name" value={form.item_name}
+                      onChange={handleChange} required placeholder="e.g. TONYTONY. CHOPPER #99" />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.label}>Title</label>
+                    <input className={styles.input} name="item_title" value={form.item_title}
+                      onChange={handleChange} placeholder="e.g. FUNKO POP" />
+                  </div>
+                </div>
+
+                <div className={styles.row}>
+                  <div className={styles.field}>
+                    <label className={styles.label}>Type</label>
+                    <Select name="item_type" value={form.item_type} onChange={handleChange} options={ITEM_TYPES} />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.label}>Category</label>
+                    <Select name="item_category" value={form.item_category} onChange={handleChange} options={ITEM_CATEGORIES} />
+                  </div>
+                </div>
+
+                <div className={styles.row}>
+                  <div className={styles.field}>
+                    <label className={styles.label}>Quality</label>
+                    <Select name="item_quality" value={form.item_quality} onChange={handleChange} options={ITEM_QUALITIES} />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.label}>Size</label>
+                    <Select name="item_size" value={form.item_size} onChange={handleChange} options={ITEM_SIZES} />
+                  </div>
+                </div>
+
+                <div className={styles.row}>
+                  <div className={styles.field}>
+                    <label className={styles.label}>Location</label>
+                    <input className={styles.input} name="item_location" value={form.item_location}
+                      onChange={handleChange} placeholder="e.g. Rack 7 Top" />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.label}>Sticker</label>
+                    <Select name="item_sticker" value={form.item_sticker} onChange={handleChange} options={ITEM_STICKERS} />
+                  </div>
+                </div>
+
+                <div className={styles.row3}>
+                  <div className={styles.field}>
+                    <label className={styles.label}>Acq. Price (₱)</label>
+                    <input className={styles.input} type="number" step="0.01" min="0"
+                      name="item_acqprice" value={form.item_acqprice} onChange={handleChange} placeholder="0.00" />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.label}>SRP (₱)</label>
+                    <input className={styles.input} type="number" step="0.01" min="0"
+                      name="item_srp" value={form.item_srp} onChange={handleChange} placeholder="0.00" />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.label}>Quantity</label>
+                    <input className={styles.input} type="number" min="0"
+                      name="item_quantity" value={form.item_quantity} onChange={handleChange} placeholder="0" />
+                  </div>
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label}>Description</label>
+                  <textarea className={styles.textarea} name="item_description" value={form.item_description}
+                    onChange={handleChange} rows={2} placeholder="Additional details..." />
+                </div>
+
+                <div className={styles.field}>
+                  <label className={styles.label}>Google Drive Image Link</label>
+                  <input className={styles.input} name="item_image" value={form.item_image === 'n/a' ? '' : form.item_image}
+                    onChange={handleChange} placeholder="https://drive.google.com/file/d/..." />
+                  <span className={styles.hint}>Paste a Google Drive share link — it will be converted automatically</span>
+                </div>
+              </form>
+            )}
           </div>
-        ) : (
-          // ── EDIT / ADD MODE ──────────────────────────────────────
-          <form onSubmit={handleSubmit} className={styles.form}>
-            <div className={styles.row}>
-              <div className={styles.field}>
-                <label className={styles.label}>Item Name <span className={styles.req}>*</span></label>
-                <input className={styles.input} name="item_name" value={form.item_name}
-                  onChange={handleChange} required placeholder="e.g. Luffy Gear Five #1607" />
-              </div>
-              <div className={styles.field}>
-                <label className={styles.label}>Category</label>
-                <input className={styles.input} name="item_category" value={form.item_category}
-                  onChange={handleChange} placeholder="e.g. Normal" />
+
+          {/* Image side panel */}
+          {hasImage && (
+            <div className={styles.imageSide}>
+              <label className={styles.label}>Image</label>
+              <div className={styles.imageBox}>
+                <img
+                  src={imgSrc}
+                  alt={item?.item_name || 'Item'}
+                  className={styles.itemImage}
+                  onError={e => { e.target.src = ''; e.target.style.display = 'none'; e.target.nextSibling.style.display = 'flex'; }}
+                />
+                <div className={styles.imageFallback}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" width="32" height="32">
+                    <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+                    <polyline points="21 15 16 10 5 21"/>
+                  </svg>
+                  <span>Image unavailable</span>
+                </div>
               </div>
             </div>
+          )}
+        </div>
 
-            <div className={styles.field}>
-              <label className={styles.label}>Description</label>
-              <textarea className={styles.textarea} name="item_description" value={form.item_description}
-                onChange={handleChange} rows={2} placeholder="e.g. FUNKO" />
-            </div>
-
-            <div className={styles.row}>
-              <div className={styles.field}>
-                <label className={styles.label}>Location</label>
-                <input className={styles.input} name="item_location" value={form.item_location}
-                  onChange={handleChange} placeholder="e.g. Rack 7 Top" />
-              </div>
-              <div className={styles.field}>
-                <label className={styles.label}>Quality</label>
-                <select className={styles.input} name="item_quality" value={form.item_quality} onChange={handleChange}>
-                  <option value="">— Select —</option>
-                  {QUALITY_OPTIONS.map(q => <option key={q} value={q}>{q}</option>)}
-                </select>
-              </div>
-            </div>
-
-            <div className={styles.row}>
-              <div className={styles.field}>
-                <label className={styles.label}>Price (₱)</label>
-                <input className={styles.input} type="number" step="0.01" min="0"
-                  name="item_price" value={form.item_price} onChange={handleChange} placeholder="0.00" />
-              </div>
-              <div className={styles.field}>
-                <label className={styles.label}>Quantity</label>
-                <input className={styles.input} type="number" min="0"
-                  name="item_quantity" value={form.item_quantity} onChange={handleChange} placeholder="0" />
-              </div>
-            </div>
-
-            <div className={styles.field}>
-              <label className={styles.label}>Image Path</label>
-              <input className={styles.input} name="item_image" value={form.item_image}
-                onChange={handleChange} placeholder="/assets/ItemsImages/filename.jpg" />
-              <span className={styles.hint}>Upload images to /public/assets/ItemsImages/ then enter the path here</span>
-            </div>
-
-            {/* Image preview */}
-            {form.item_image && form.item_image !== 'n/a' && (
-              <div className={styles.imageWrap}>
-                <label className={styles.label}>Image Preview</label>
-                <img src={form.item_image} alt="Preview" className={styles.itemImage}
-                  onError={(e) => { e.target.style.display = 'none'; }} />
-              </div>
-            )}
-
-            <div className={styles.modalFooter}>
-              <button type="button" className={styles.cancelBtn} onClick={onClose}>Cancel</button>
-              <button type="submit" className={styles.submitBtn} disabled={saving}>
-                {saving ? (
-                  <><span className={styles.btnSpinner} /> Saving...</>
-                ) : (
-                  isAdd ? 'Add Item' : 'Save Changes'
-                )}
-              </button>
-            </div>
-          </form>
+        {/* Footer — only for edit/add mode */}
+        {(!locked || isAdd) && (
+          <div className={styles.modalFooter}>
+            <button type="button" className={styles.cancelBtn} onClick={onClose}>Cancel</button>
+            <button type="submit" form="itemForm" className={styles.submitBtn} disabled={saving}>
+              {saving ? <><span className={styles.btnSpinner}/> Saving...</> : isAdd ? 'Add Item' : 'Save Changes'}
+            </button>
+          </div>
         )}
       </div>
     </div>
   );
+}
+
+function LockIcon() {
+  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="14" height="14"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>;
+}
+function UnlockIcon() {
+  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" width="14" height="14"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>;
 }

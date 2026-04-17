@@ -21,21 +21,23 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const search   = searchParams.get('search')   || '';
     const quality  = searchParams.get('quality')  || '';   // filter by quality
-    const sortBy   = searchParams.get('sort_by')  || '';   // "item_dateAdded" | "item_lastUpdate" | item_id etc
+    const category = searchParams.get('category') || '';   // filter by category
+    const sortBy   = searchParams.get('sort_by')  || '';   // "item_dateAdded" | "item_lastUpdatedd" | item_id etc
     const sortDir  = searchParams.get('sort_dir') || 'ASC';
     const start    = parseInt(searchParams.get('start')  || '0');
     const length   = parseInt(searchParams.get('length') || '10');
 
     const validColumns = [
       'item_id', 'item_name', 'item_description', 'item_location',
-      'item_category', 'item_quality', 'item_price', 'item_quantity',
-      '""item_dateAdded""', '""item_lastUpdate""',
+      'item_category', 'item_quality', 'item_srp', 'item_quantity',
+      '""item_dateAdded""', '""item_lastUpdatedd""',
     ];
     const safeColumn = validColumns.includes(sortBy) ? sortBy : 'item_id';
     const safeDir    = sortDir.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
 
     const searchPattern = search  ? `%${search}%`  : null;
-    const qualityFilter = quality || null;
+    const qualityFilter  = quality  || null;
+    const categoryFilter = category || null;
 
     let data, countResult;
 
@@ -44,6 +46,7 @@ export async function GET(request) {
         SELECT * FROM tbl_items
         WHERE item_status = 'active'
           AND (${qualityFilter}::text IS NULL OR item_quality = ${qualityFilter})
+          AND (${categoryFilter}::text IS NULL OR item_category = ${categoryFilter})
           AND (
             ${searchPattern}::text IS NULL OR
             item_id::text    ILIKE ${searchPattern || ''} OR
@@ -52,7 +55,7 @@ export async function GET(request) {
             item_location    ILIKE ${searchPattern || ''} OR
             item_category    ILIKE ${searchPattern || ''} OR
             item_quality     ILIKE ${searchPattern || ''} OR
-            item_price::text ILIKE ${searchPattern || ''} OR
+            item_srp::text ILIKE ${searchPattern || ''} OR
             item_quantity::text ILIKE ${searchPattern || ''}
           )
         ORDER BY item_id ASC
@@ -62,6 +65,7 @@ export async function GET(request) {
         SELECT COUNT(*) as count FROM tbl_items
         WHERE item_status = 'active'
           AND (${qualityFilter}::text IS NULL OR item_quality = ${qualityFilter})
+          AND (${categoryFilter}::text IS NULL OR item_category = ${categoryFilter})
           AND (
             ${searchPattern}::text IS NULL OR
             item_id::text    ILIKE ${searchPattern || ''} OR
@@ -70,7 +74,7 @@ export async function GET(request) {
             item_location    ILIKE ${searchPattern || ''} OR
             item_category    ILIKE ${searchPattern || ''} OR
             item_quality     ILIKE ${searchPattern || ''} OR
-            item_price::text ILIKE ${searchPattern || ''} OR
+            item_srp::text ILIKE ${searchPattern || ''} OR
             item_quantity::text ILIKE ${searchPattern || ''}
           )
       `;
@@ -79,6 +83,7 @@ export async function GET(request) {
         SELECT * FROM tbl_items
         WHERE item_status = 'active'
           AND (${qualityFilter}::text IS NULL OR item_quality = ${qualityFilter})
+          AND (${categoryFilter}::text IS NULL OR item_category = ${categoryFilter})
           AND (
             ${searchPattern}::text IS NULL OR
             item_id::text    ILIKE ${searchPattern || ''} OR
@@ -87,7 +92,7 @@ export async function GET(request) {
             item_location    ILIKE ${searchPattern || ''} OR
             item_category    ILIKE ${searchPattern || ''} OR
             item_quality     ILIKE ${searchPattern || ''} OR
-            item_price::text ILIKE ${searchPattern || ''} OR
+            item_srp::text ILIKE ${searchPattern || ''} OR
             item_quantity::text ILIKE ${searchPattern || ''}
           )
         ORDER BY item_id DESC
@@ -97,6 +102,7 @@ export async function GET(request) {
         SELECT COUNT(*) as count FROM tbl_items
         WHERE item_status = 'active'
           AND (${qualityFilter}::text IS NULL OR item_quality = ${qualityFilter})
+          AND (${categoryFilter}::text IS NULL OR item_category = ${categoryFilter})
           AND (
             ${searchPattern}::text IS NULL OR
             item_id::text    ILIKE ${searchPattern || ''} OR
@@ -105,7 +111,7 @@ export async function GET(request) {
             item_location    ILIKE ${searchPattern || ''} OR
             item_category    ILIKE ${searchPattern || ''} OR
             item_quality     ILIKE ${searchPattern || ''} OR
-            item_price::text ILIKE ${searchPattern || ''} OR
+            item_srp::text ILIKE ${searchPattern || ''} OR
             item_quantity::text ILIKE ${searchPattern || ''}
           )
       `;
@@ -126,16 +132,21 @@ export async function POST(request) {
   try {
     const body = await request.json();
     const {
-      item_name, item_description, item_location,
-      item_category, item_quality, item_price, item_quantity,
-      item_image = 'n/a',
+      item_name, item_title, item_type, item_description, item_location,
+      item_category, item_quality, item_size, item_sticker,
+      item_acqprice, item_srp, item_quantity, item_image = 'n/a',
     } = body;
 
     const result = await sql`
       INSERT INTO tbl_items
-        (item_name, item_description, item_location, item_category, item_quality, item_price, item_quantity, item_image, item_status)
+        (item_name, item_title, item_type, item_description, item_location,
+         item_category, item_quality, item_size, item_sticker,
+         item_acqprice, item_srp, item_quantity, item_image, item_status)
       VALUES
-        (${item_name}, ${item_description}, ${item_location}, ${item_category}, ${item_quality}, ${item_price}, ${item_quantity}, ${item_image}, 'active')
+        (${item_name}, ${item_title || ''}, ${item_type || ''}, ${item_description},
+         ${item_location}, ${item_category}, ${item_quality}, ${item_size || ''},
+         ${item_sticker || ''}, ${item_acqprice || 0}, ${item_srp || 0},
+         ${item_quantity}, ${item_image}, 'active')
       RETURNING *
     `;
 
