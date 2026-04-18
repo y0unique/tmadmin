@@ -19,6 +19,7 @@ const COLUMNS = [
   { key: 'item_acqprice',  label: 'ACQ Price' },
   { key: 'item_srp',  label: 'SRP' },
   { key: 'item_quantity', label: 'Quantity' },
+  { key: 'item_location',     label: 'Location' },
 ];
 
 const PAGE_SIZE = 10;
@@ -223,6 +224,7 @@ export default function Home() {
                   <td className={`${styles.td} ${styles.qtyCell}`}>{item.item_acqprice}</td>
                   <td className={`${styles.td} ${styles.qtyCell}`}>{item.item_srp}</td>
                   <td className={`${styles.td} ${styles.qtyCell}`}>{item.item_quantity}</td>
+                  <td className={`${styles.td} ${styles.qtyCell}`}>{item.item_location}</td>
                   <td className={styles.td}>
                     <button
                       className={styles.deleteBtn}
