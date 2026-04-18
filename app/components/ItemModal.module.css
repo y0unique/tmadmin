@@ -76,7 +76,7 @@
   flex: 1; overflow-y: auto;
 }
 
-/* IMAGE SIDE */
+/* IMAGE SIDE — desktop: right panel, mobile: bottom */
 .imageSide {
   width: 280px;
   flex-shrink: 0;
@@ -105,6 +105,18 @@
   gap: 8px; color: var(--muted);
   font-family: var(--font-mono); font-size: 0.72rem;
   text-align: center; padding: 1rem;
+}
+
+/* Mobile: stack image below form */
+@media (max-width: 700px) {
+  .contentWithImage { flex-direction: column !important; }
+  .imageSide {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--border);
+  }
+  .imageBox { min-height: 160px; max-height: 220px; }
+  .modalWide { max-width: 100%; }
 }
 
 /* VIEW MODE */
@@ -178,3 +190,74 @@ select.input option { background: var(--surface); }
   border-radius: 50%; animation: spin 0.6s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── IMAGE PREVIEW AT BOTTOM (edit mode) ──────────────────────────────────── */
+.imagePreviewBottom {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding-top: 0.5rem;
+  border-top: 1px solid var(--border);
+}
+.imagePreviewBox {
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  background: var(--surface2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  max-height: 220px;
+  overflow: hidden;
+}
+.itemImageBottom {
+  max-width: 100%;
+  max-height: 200px;
+  object-fit: contain;
+  border-radius: 2px;
+}
+
+/* ── COMPUTED STATS IN VIEW MODE ────────────────────────────────────────────── */
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+@media (max-width: 500px) { .statsGrid { grid-template-columns: repeat(2, 1fr); } }
+
+.statBox {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 0.875rem 1rem;
+  border-right: 1px solid var(--border);
+  background: var(--surface2);
+}
+.statBox:last-child { border-right: none; }
+
+.statLabel {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.statValue {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1.2;
+}
+.statAccent { color: var(--accent); }
+.statWarn   { color: #f59e0b; }
+.statHint {
+  font-family: var(--font-mono);
+  font-size: 0.58rem;
+  color: var(--muted);
+  opacity: 0.6;
+  line-height: 1.3;
+}

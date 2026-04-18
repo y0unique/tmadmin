@@ -1,0 +1,181 @@
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-top: 1.25rem;
+}
+
+.cardHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+.cardTitleWrap { display: flex; flex-direction: column; gap: 2px; }
+.cardTitle {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 500;
+  letter-spacing: 0.15em;
+  color: var(--text);
+}
+.cardSub {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--muted);
+}
+
+/* GRID */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+}
+@media (max-width: 800px) { .grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 480px) { .grid { grid-template-columns: 1fr; } }
+
+/* STAT BOX */
+.statBox {
+  padding: 1.1rem 1.25rem;
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+.statBox:last-child { border-right: none; }
+.statBoxEditable { background: var(--surface2); }
+
+/* TOP ROW */
+.statTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.statName {
+  font-family: var(--font-display);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+}
+.statBadge {
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  letter-spacing: 0.08em;
+  padding: 2px 7px;
+  border-radius: 2px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  white-space: nowrap;
+}
+.statBadgeWarn {
+  background: rgba(245,158,11,0.1);
+  border-color: rgba(245,158,11,0.3);
+  color: #d97706;
+}
+[data-theme="light"] .statBadgeWarn {
+  background: rgba(217,119,6,0.1);
+  border-color: rgba(217,119,6,0.3);
+  color: #92400e;
+}
+
+/* FORMULA */
+.formula {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 2px;
+  padding: 7px 10px;
+}
+.formulaText {
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+/* EXAMPLE */
+.example {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+  line-height: 1.5;
+}
+.example strong {
+  color: var(--text);
+  font-weight: 600;
+}
+
+/* EDITABLE RATE */
+.rateBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(245,158,11,0.12);
+  border: 1px solid rgba(245,158,11,0.4);
+  color: #d97706;
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 1px 6px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.rateBtn:hover {
+  background: rgba(245,158,11,0.2);
+  border-color: #d97706;
+}
+[data-theme="light"] .rateBtn {
+  background: rgba(217,119,6,0.08);
+  border-color: rgba(217,119,6,0.3);
+  color: #92400e;
+}
+
+.rateInput {
+  width: 44px;
+  background: var(--surface);
+  border: 1px solid #d97706;
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 1px 5px;
+  border-radius: 2px;
+  outline: none;
+  text-align: center;
+}
+
+/* EDIT ACTIONS */
+.editActions { display: flex; gap: 6px; }
+.saveBtn {
+  padding: 4px 12px;
+  background: var(--accent);
+  border: none;
+  color: #000;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  font-weight: 700;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.saveBtn:hover { background: #d4e83e; }
+[data-theme="light"] .saveBtn { color: #000; }
+
+.cancelEditBtn {
+  padding: 4px 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.cancelEditBtn:hover { border-color: var(--muted); color: var(--text); }

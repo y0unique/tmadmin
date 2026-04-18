@@ -6,6 +6,7 @@ import DeleteModal from './components/DeleteModal';
 import Footer from './components/Footer';
 import Sidebar from './components/Sidebar';
 import FilterPanel from './components/FilterPanel';
+import SummaryCard from './components/SummaryCard';
 import styles from './page.module.css';
 
 // Visible table columns only — Description, Location, Category hidden (shown in modal)
@@ -256,6 +257,9 @@ export default function Home() {
             <button className={styles.pageBtn} onClick={() => setPage(totalPages-1)} disabled={page >= totalPages-1}>»</button>
           </div>
         </div>
+
+        {/* Summary card */}
+        <SummaryCard />
       </main>
 
       <Footer />

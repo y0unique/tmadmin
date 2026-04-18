@@ -25,6 +25,23 @@ const ITEM_STICKERS = [
   'HOTTOPIC', 'EE', 'AAA', 'BOXLUNCH', 'CHALICE', 'FUNKO', 'CRUNCHY ROLL',
 ];
 
+const SHOPEE_FEE_RATE = 0.20;
+
+function fmt(val) {
+  return `₱${parseFloat(val || 0).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+function computeStats(item) {
+  const srp = parseFloat(item?.item_srp)      || 0;
+  const acq = parseFloat(item?.item_acqprice) || 0;
+  const qty = parseInt(item?.item_quantity)   || 0;
+  const mup     = acq > 0 ? srp / acq : 0;
+  const wsp     = srp * qty;
+  const wspSrp  = wsp - srp;
+  const spFee   = wsp - srp * (1 - SHOPEE_FEE_RATE);
+  return { mup, wsp, wspSrp, spFee };
+}
+
 const EMPTY = {
   item_name: '', item_title: '', item_type: 'N/A', item_description: '',
   item_location: '', item_category: 'N/A', item_quality: 'N/A',
@@ -177,6 +194,35 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
                   <ViewField label="Quantity"    value={item?.item_quantity} />
                   <ViewField label="Description" value={item?.item_description} wide />
                 </div>
+                {/* Computed Stats */}
+                {(() => {
+                  const { mup, wsp, wspSrp, spFee } = computeStats(item);
+                  return (
+                    <div className={styles.statsGrid}>
+                      <div className={styles.statBox}>
+                        <span className={styles.statLabel}>% MUP</span>
+                        <span className={`${styles.statValue} ${styles.statAccent}`}>{mup.toFixed(2)}x</span>
+                        <span className={styles.statHint}>SRP ÷ Acq Price</span>
+                      </div>
+                      <div className={styles.statBox}>
+                        <span className={styles.statLabel}>WSP</span>
+                        <span className={`${styles.statValue} ${styles.statAccent}`}>{fmt(wsp)}</span>
+                        <span className={styles.statHint}>SRP × Quantity</span>
+                      </div>
+                      <div className={styles.statBox}>
+                        <span className={styles.statLabel}>WSP − SRP</span>
+                        <span className={styles.statValue}>{fmt(wspSrp)}</span>
+                        <span className={styles.statHint}>(SRP × Qty) − SRP</span>
+                      </div>
+                      <div className={styles.statBox}>
+                        <span className={styles.statLabel}>SP Fee (20%)</span>
+                        <span className={`${styles.statValue} ${styles.statWarn}`}>{fmt(spFee)}</span>
+                        <span className={styles.statHint}>WSP − SRP×80%</span>
+                      </div>
+                    </div>
+                  );
+                })()}
+
                 <div className={styles.viewMeta}>
                   {item?.item_dateAdded   && <span>Added: {new Date(item.item_dateAdded).toLocaleString('en-PH')}</span>}
                   {item?.item_lastUpdated && <span>Updated: {new Date(item.item_lastUpdated).toLocaleString('en-PH')}</span>}
@@ -263,6 +309,8 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
                     onChange={handleChange} placeholder="https://drive.google.com/file/d/..." />
                   <span className={styles.hint}>Paste a Google Drive share link — it will be converted automatically</span>
                 </div>
+
+
               </form>
             )}
           </div>

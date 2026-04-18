@@ -86,9 +86,9 @@ export async function GET(request) {
 
     // Build CSV
     const headers = [
-      'ID', 'Name', 'Title', 'Type', 'Description', 'Location', 'Category',
-      'Quality', 'Size', 'Sticker', 'Acq Price', 'SRP', 'Quantity',
-      'Image', 'Status', 'Date Added', 'Last Updated',
+      'item_name', 'item_title', 'item_type', 'item_description', 'item_location',
+      'item_category', 'item_quality', 'item_size', 'item_sticker',
+      'item_acqprice', 'item_srp', 'item_quantity', 'item_image',
     ];
 
     const escape = (val) => {

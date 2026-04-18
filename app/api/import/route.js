@@ -2,9 +2,9 @@ import { NextResponse } from 'next/server';
 import sql from '../../lib/db';
 
 const REQUIRED_HEADERS = [
-  'item_name', 'item_description', 'item_location',
-  'item_category', 'item_quality', 'item_price',
-  'item_quantity', 'item_image',
+  'item_name', 'item_title', 'item_type', 'item_description',
+  'item_location', 'item_category', 'item_quality', 'item_size',
+  'item_sticker', 'item_acqprice', 'item_srp', 'item_quantity', 'item_image',
 ];
 
 async function writeLog(action) {
@@ -105,17 +105,23 @@ export async function POST(request) {
     for (let i = 0; i < rows.length; i++) {
       const row = rows[i];
       try {
-        const price    = parseFloat(row.item_price)    || 0;
-        const quantity = parseInt(row.item_quantity)   || 0;
+        const acqprice = parseFloat(row.item_acqprice) || 0;
+        const srp      = parseFloat(row.item_srp)      || 0;
+        const quantity = parseInt(row.item_quantity)    || 0;
         const image    = row.item_image || 'n/a';
 
-        const result = await sql`
+        const result = await sql\`
           INSERT INTO tbl_items
-            (item_name, item_description, item_location, item_category, item_quality, item_price, item_quantity, item_image, item_status)
+            (item_name, item_title, item_type, item_description, item_location,
+             item_category, item_quality, item_size, item_sticker,
+             item_acqprice, item_srp, item_quantity, item_image, item_status)
           VALUES
-            (${row.item_name}, ${row.item_description}, ${row.item_location}, ${row.item_category}, ${row.item_quality}, ${price}, ${quantity}, ${image}, 'active')
+            (\${row.item_name}, \${row.item_title || ''}, \${row.item_type || ''},
+             \${row.item_description}, \${row.item_location}, \${row.item_category},
+             \${row.item_quality}, \${row.item_size || ''}, \${row.item_sticker || ''},
+             \${acqprice}, \${srp}, \${quantity}, \${image}, 'active')
           RETURNING item_id
-        `;
+        \`;
         inserted.push(result[0].item_id);
       } catch (e) {
         errors.push({ row: i + 2, error: e.message });
