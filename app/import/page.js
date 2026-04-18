@@ -6,9 +6,9 @@ import Sidebar from '../components/Sidebar';
 import styles from './import.module.css';
 
 const REQUIRED_HEADERS = [
-  'item_name', 'item_description', 'item_location',
-  'item_category', 'item_quality', 'item_price',
-  'item_quantity', 'item_image',
+  'item_name', 'item_title', 'item_type', 'item_description',
+  'item_location', 'item_category', 'item_quality', 'item_size',
+  'item_sticker', 'item_acqprice', 'item_srp', 'item_quantity', 'item_image',
 ];
 
 export default function ImportPage() {

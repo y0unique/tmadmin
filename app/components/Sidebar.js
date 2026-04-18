@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { usePathname } from 'next/navigation';
 import styles from './Sidebar.module.css';
 
-const INVENTORY_PATHS = ['/', '/import'];
+const INVENTORY_PATHS = ['/', '/archived', '/import'];
 
 export default function Sidebar({ open, onClose }) {
   const pathname = usePathname();
@@ -53,6 +53,14 @@ export default function Sidebar({ open, onClose }) {
                 >
                   <span className={styles.subDot} />
                   Item List
+                </a>
+                <a
+                  href="/archived"
+                  className={`${styles.navSubItem} ${pathname === '/archived' ? styles.navSubItemActive : ''}`}
+                  onClick={onClose}
+                >
+                  <span className={styles.subDot} />
+                  Archived Items
                 </a>
                 <a
                   href="/import"

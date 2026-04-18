@@ -7,6 +7,9 @@ const REQUIRED_HEADERS = [
   'item_sticker', 'item_acqprice', 'item_srp', 'item_quantity', 'item_image',
 ];
 
+// These must match exactly (order doesn't matter, all must be present)
+const HEADER_DISPLAY = 'item_name | item_title | item_type | item_description | item_location | item_category | item_quality | item_size | item_sticker | item_acqprice | item_srp | item_quantity | item_image';
+
 async function writeLog(action) {
   try {
     const now  = new Date();
