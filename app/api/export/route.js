@@ -18,13 +18,13 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const search    = searchParams.get('search')    || '';
     const quality   = searchParams.get('quality')   || '';
-    const sortBy    = searchParams.get('sort_by')   || '"item_dateAdded"';
+    const sortBy    = searchParams.get('sort_by')   || 'item_dateadded';
     const sortDir   = searchParams.get('sort_dir')  || 'ASC';
     const dateFrom  = searchParams.get('date_from') || '';
     const dateTo    = searchParams.get('date_to')   || '';
 
-    const validSortCols = ['"item_dateAdded"', '"item_lastUpdatedd"'];
-    const safeSort = validSortCols.includes(sortBy) ? sortBy : '"item_dateAdded"';
+    const validSortCols = ['item_dateadded', 'item_lastupdated'];
+    const safeSort = validSortCols.includes(sortBy) ? sortBy : 'item_dateadded';
     const safeDir  = sortDir.toUpperCase() === 'DESC' ? 'DESC' : 'ASC';
 
     // Date range is required for export
@@ -43,12 +43,12 @@ export async function GET(request) {
         SELECT
           item_id, item_name, item_description, item_location,
           item_category, item_quality, item_srp, item_quantity,
-          item_image, item_status, "item_dateAdded", "item_lastUpdatedd"
+          item_image, item_status, item_dateadded, item_lastupdated
         FROM tbl_items
         WHERE item_status = 'active'
           AND (${qualityFilter}::text IS NULL OR item_quality = ${qualityFilter})
-          AND "item_dateAdded"::date >= ${dateFrom}::date
-          AND "item_dateAdded"::date <= ${dateTo}::date
+          AND item_dateadded::date >= ${dateFrom}::date
+          AND item_dateadded::date <= ${dateTo}::date
           AND (
             ${searchPattern}::text IS NULL OR
             item_id::text    ILIKE ${searchPattern || ''} OR
@@ -58,19 +58,19 @@ export async function GET(request) {
             item_category    ILIKE ${searchPattern || ''} OR
             item_quality     ILIKE ${searchPattern || ''}
           )
-        ORDER BY "item_dateAdded" ASC
+        ORDER BY item_dateadded ASC
       `;
     } else {
       data = await sql`
         SELECT
           item_id, item_name, item_description, item_location,
           item_category, item_quality, item_srp, item_quantity,
-          item_image, item_status, "item_dateAdded", "item_lastUpdatedd"
+          item_image, item_status, item_dateadded, item_lastupdated
         FROM tbl_items
         WHERE item_status = 'active'
           AND (${qualityFilter}::text IS NULL OR item_quality = ${qualityFilter})
-          AND "item_dateAdded"::date >= ${dateFrom}::date
-          AND "item_dateAdded"::date <= ${dateTo}::date
+          AND item_dateadded::date >= ${dateFrom}::date
+          AND item_dateadded::date <= ${dateTo}::date
           AND (
             ${searchPattern}::text IS NULL OR
             item_id::text    ILIKE ${searchPattern || ''} OR
@@ -80,7 +80,7 @@ export async function GET(request) {
             item_category    ILIKE ${searchPattern || ''} OR
             item_quality     ILIKE ${searchPattern || ''}
           )
-        ORDER BY "item_dateAdded" DESC
+        ORDER BY item_dateadded DESC
       `;
     }
 
@@ -113,8 +113,8 @@ export async function GET(request) {
       item.item_quantity,
       item.item_image,
       item.item_status,
-      formatDate(item.item_dateAdded),
-      formatDate(item.item_lastUpdated),
+      formatDate(item.item_dateadded),
+      formatDate(item.item_lastupdated),
     ].map(escape).join(','));
 
     const csv = [headers.join(','), ...rows].join('\n');

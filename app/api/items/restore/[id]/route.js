@@ -22,7 +22,7 @@ export async function PUT(request, { params }) {
 
     const result = await sql`
       UPDATE tbl_items
-      SET item_status = 'active', "item_lastUpdated" = CURRENT_TIMESTAMP
+      SET item_status = 'active', item_lastupdated = CURRENT_TIMESTAMP
       WHERE item_id = ${id} AND item_status = 'inactive'
       RETURNING *
     `;

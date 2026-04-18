@@ -224,8 +224,8 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
                 })()}
 
                 <div className={styles.viewMeta}>
-                  {item?.item_dateAdded   && <span>Added: {new Date(item.item_dateAdded).toLocaleString('en-PH')}</span>}
-                  {item?.item_lastUpdated && <span>Updated: {new Date(item.item_lastUpdated).toLocaleString('en-PH')}</span>}
+                  {item?.item_dateadded   && <span>Added: {new Date(item.item_dateadded).toLocaleString('en-PH')}</span>}
+                  {item?.item_lastupdated && <span>Updated: {new Date(item.item_lastupdated).toLocaleString('en-PH')}</span>}
                 </div>
               </div>
 

@@ -22,7 +22,7 @@ export async function GET(request) {
           item_quality     ILIKE ${pattern} OR
           item_location    ILIKE ${pattern}
         )
-        ORDER BY item_lastUpdated DESC
+        ORDER BY item_lastupdated DESC
         LIMIT ${length} OFFSET ${start}
       `;
       countResult = await sql`
@@ -39,7 +39,7 @@ export async function GET(request) {
       data = await sql`
         SELECT * FROM tbl_items
         WHERE item_status = 'inactive'
-        ORDER BY item_lastUpdated DESC
+        ORDER BY item_lastupdated DESC
         LIMIT ${length} OFFSET ${start}
       `;
       countResult = await sql`

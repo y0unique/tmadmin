@@ -41,7 +41,7 @@ export async function PUT(request, { params }) {
         item_srp         = ${item_srp      || 0},
         item_quantity    = ${item_quantity},
         item_image       = ${item_image},
-        item_lastUpdated = CURRENT_TIMESTAMP
+        item_lastupdated = CURRENT_TIMESTAMP
       WHERE item_id = ${id}
       RETURNING *
     `;

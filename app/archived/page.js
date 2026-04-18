@@ -125,8 +125,8 @@ export default function ArchivedPage() {
                   <td className={`${styles.td} ${styles.qtyCell}`}>{item.item_quantity}</td>
                   <td className={styles.td}>{item.item_location}</td>
                   <td className={`${styles.td} ${styles.dateCell}`}>
-                    {item.item_lastUpdated
-                      ? new Date(item.item_lastUpdated).toLocaleDateString('en-PH')
+                    {item.item_lastupdated
+                      ? new Date(item.item_lastupdated).toLocaleDateString('en-PH')
                       : '—'}
                   </td>
                   <td className={styles.td}>

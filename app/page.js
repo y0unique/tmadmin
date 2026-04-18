@@ -83,7 +83,7 @@ export default function Home() {
   const handleExport = () => {
     const params = new URLSearchParams({
       quality:   filters.quality  || '',
-      sort_by:   filters.sortBy   || 'item_dateAdded',
+      sort_by:   filters.sortBy   || 'item_dateadded',
       sort_dir:  filters.sortDir  || 'ASC',
       date_from: filters.dateFrom,
       date_to:   filters.dateTo,
@@ -175,7 +175,7 @@ export default function Home() {
             )}
             {filters.sortBy && (
               <span className={styles.pill}>
-                Sort: {filters.sortBy === 'item_dateAdded' ? 'Date Added' : 'Last Updated'} {filters.sortDir}
+                Sort: {filters.sortBy === 'item_dateadded' ? 'Date Added' : 'Last Updated'} {filters.sortDir}
                 <button onClick={() => handleFilterChange({ ...filters, sortBy: '', sortDir: 'ASC' })}>✕</button>
               </span>
             )}

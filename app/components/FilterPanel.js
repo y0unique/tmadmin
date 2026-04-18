@@ -12,10 +12,10 @@ const CATEGORIES = [
 ];
 
 const SORT_OPTIONS = [
-  { value: 'item_dateAdded-ASC',    label: 'Date Added — Oldest first' },
-  { value: 'item_dateAdded-DESC',   label: 'Date Added — Newest first' },
-  { value: 'item_lastUpdated-ASC',   label: 'Last Updated — Oldest first' },
-  { value: 'item_lastUpdated-DESC',  label: 'Last Updated — Newest first' },
+  { value: 'item_dateadded-ASC',    label: 'Date Added — Oldest first' },
+  { value: 'item_dateadded-DESC',   label: 'Date Added — Newest first' },
+  { value: 'item_lastupdated-ASC',   label: 'Last Updated — Oldest first' },
+  { value: 'item_lastupdated-DESC',  label: 'Last Updated — Newest first' },
 ];
 
 export default function FilterPanel({ open, onClose, filters, onChange }) {
@@ -54,7 +54,7 @@ export default function FilterPanel({ open, onClose, filters, onChange }) {
     if (!hasDateRange) return;
     const params = new URLSearchParams({
       quality:   filters.quality  || '',
-      sort_by:   filters.sortBy   || 'item_dateAdded',
+      sort_by:   filters.sortBy   || 'item_dateadded',
       sort_dir:  filters.sortDir  || 'ASC',
       date_from: filters.dateFrom,
       date_to:   filters.dateTo,
