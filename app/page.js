@@ -16,7 +16,9 @@ const COLUMNS = [
   { key: 'item_type',     label: 'Type' },
   { key: 'item_category', label: 'Category' },
   { key: 'item_quality',  label: 'Quality' },
-  { key: 'item_quantity', label: 'Qty' },
+  { key: 'item_acqprice',  label: 'ACQ Price' },
+  { key: 'item_srp',  label: 'SRP' },
+  { key: 'item_quantity', label: 'Quantity' },
 ];
 
 const PAGE_SIZE = 10;
@@ -218,6 +220,8 @@ export default function Home() {
                   <td className={styles.td}>
                     <span className={styles.qualityBadge}>{item.item_quality}</span>
                   </td>
+                  <td className={`${styles.td} ${styles.qtyCell}`}>{item.item_acqprice}</td>
+                  <td className={`${styles.td} ${styles.qtyCell}`}>{item.item_srp}</td>
                   <td className={`${styles.td} ${styles.qtyCell}`}>{item.item_quantity}</td>
                   <td className={styles.td}>
                     <button

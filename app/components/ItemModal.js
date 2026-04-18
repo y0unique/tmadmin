@@ -304,10 +304,10 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
                 </div>
 
                 <div className={styles.field}>
-                  <label className={styles.label}>Google Drive Image Link</label>
+                  <label className={styles.label}>Image Link</label>
                   <input className={styles.input} name="item_image" value={form.item_image === 'n/a' ? '' : form.item_image}
                     onChange={handleChange} placeholder="https://drive.google.com/file/d/..." />
-                  <span className={styles.hint}>Paste a Google Drive share link — it will be converted automatically</span>
+                  <span className={styles.hint}>Paste a Public link — it will be converted automatically</span>
                 </div>
 
 
