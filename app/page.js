@@ -11,15 +11,15 @@ import styles from './page.module.css';
 
 // Visible table columns only — Description, Location, Category hidden (shown in modal)
 const COLUMNS = [
-  { key: 'item_id',       label: 'ID' },
+  { key: 'item_status',   label: 'Status' },
   { key: 'item_name',     label: 'Name' },
   { key: 'item_type',     label: 'Type' },
   { key: 'item_category', label: 'Category' },
   { key: 'item_quality',  label: 'Quality' },
-  { key: 'item_acqprice',  label: 'ACQ Price' },
-  { key: 'item_srp',  label: 'SRP' },
+  { key: 'item_acqprice', label: 'ACQ Price' },
+  { key: 'item_srp',      label: 'SRP' },
   { key: 'item_quantity', label: 'Quantity' },
-  { key: 'item_location',     label: 'Location' },
+  { key: 'item_location', label: 'Location' },
 ];
 
 const PAGE_SIZE = 10;
@@ -210,7 +210,13 @@ export default function Home() {
                 <tr key={item.item_id}
                   className={`${styles.tr} ${deletingId === item.item_id ? styles.trDeleting : ''}`}
                   style={{ animationDelay: `${i * 30}ms` }}>
-                  <td className={`${styles.td} ${styles.idCell}`}>{item.item_id}</td>
+                  <td className={styles.td}>
+                    {parseInt(item.item_quantity) > 0 ? (
+                      <span className={styles.badgeInStock}>In Stock</span>
+                    ) : (
+                      <span className={styles.badgeOutOfStock}>Out of Stock</span>
+                    )}
+                  </td>
                   <td className={styles.td}>
                     <button className={styles.nameBtn} onClick={() => openView(item)}>
                       {item.item_name}
