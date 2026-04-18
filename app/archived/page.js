@@ -6,17 +6,6 @@ import Sidebar from '../components/Sidebar';
 import { useToast } from '../components/Toast';
 import styles from './archived.module.css';
 
-const COLUMNS = [
-  { key: 'item_name',     label: 'Name' },
-  { key: 'item_type',     label: 'Type' },
-  { key: 'item_category', label: 'Category' },
-  { key: 'item_quality',  label: 'Quality' },
-  { key: 'item_srp',      label: 'SRP' },
-  { key: 'item_quantity', label: 'Quantity' },
-  { key: 'item_location', label: 'Location' },
-  { key: 'item_lastupdated', label: 'Removed' },
-];
-
 const PAGE_SIZE = 10;
 
 export default function ArchivedPage() {
@@ -110,11 +99,11 @@ export default function ArchivedPage() {
             </thead>
             <tbody>
               {loading ? (
-                <tr><td colSpan={COLUMNS.length + 1} className={styles.loading}>
+                <tr><td colSpan={9} className={styles.loading}>
                   <span className={styles.loadingDots}><span/><span/><span/></span>
                 </td></tr>
               ) : items.length === 0 ? (
-                <tr><td colSpan={COLUMNS.length + 1} className={styles.empty}>
+                <tr><td colSpan={9} className={styles.empty}>
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1" width="32" height="32">
                     <path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/>
                   </svg>
@@ -136,8 +125,8 @@ export default function ArchivedPage() {
                   <td className={`${styles.td} ${styles.qtyCell}`}>{item.item_quantity}</td>
                   <td className={styles.td}>{item.item_location}</td>
                   <td className={`${styles.td} ${styles.dateCell}`}>
-                    {item.item_lastUpdated
-                      ? new Date(item.item_lastUpdated).toLocaleDateString('en-PH')
+                    {item.item_lastupdated
+                      ? new Date(item.item_lastupdated).toLocaleDateString('en-PH')
                       : '—'}
                   </td>
                   <td className={styles.td}>
