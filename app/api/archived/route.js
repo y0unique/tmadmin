@@ -1,7 +1,9 @@
 import { NextResponse } from 'next/server';
 import sql from '../../lib/db';
 
-// GET /api/archived — fetch all inactive items with search and pagination
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -16,11 +18,11 @@ export async function GET(request) {
       data = await sql`
         SELECT * FROM tbl_items
         WHERE item_status = 'inactive' AND (
-          item_name        ILIKE ${pattern} OR
-          item_type        ILIKE ${pattern} OR
-          item_category    ILIKE ${pattern} OR
-          item_quality     ILIKE ${pattern} OR
-          item_location    ILIKE ${pattern}
+          item_name     ILIKE ${pattern} OR
+          item_type     ILIKE ${pattern} OR
+          item_category ILIKE ${pattern} OR
+          item_quality  ILIKE ${pattern} OR
+          item_location ILIKE ${pattern}
         )
         ORDER BY item_lastupdated DESC
         LIMIT ${length} OFFSET ${start}
@@ -28,11 +30,11 @@ export async function GET(request) {
       countResult = await sql`
         SELECT COUNT(*) as count FROM tbl_items
         WHERE item_status = 'inactive' AND (
-          item_name        ILIKE ${pattern} OR
-          item_type        ILIKE ${pattern} OR
-          item_category    ILIKE ${pattern} OR
-          item_quality     ILIKE ${pattern} OR
-          item_location    ILIKE ${pattern}
+          item_name     ILIKE ${pattern} OR
+          item_type     ILIKE ${pattern} OR
+          item_category ILIKE ${pattern} OR
+          item_quality  ILIKE ${pattern} OR
+          item_location ILIKE ${pattern}
         )
       `;
     } else {
@@ -47,12 +49,15 @@ export async function GET(request) {
       `;
     }
 
-    return NextResponse.json({
-      data,
-      recordsTotal: parseInt(countResult[0].count),
-    });
+    return NextResponse.json(
+      { data, recordsTotal: parseInt(countResult[0].count) },
+      { headers: { 'Cache-Control': 'no-store, no-cache, must-revalidate' } }
+    );
   } catch (error) {
     console.error('GET /api/archived error:', error);
-    return NextResponse.json({ error: 'Failed to fetch archived items', details: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to fetch archived items', details: error.message },
+      { status: 500 }
+    );
   }
 }

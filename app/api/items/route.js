@@ -1,19 +1,9 @@
 import { NextResponse } from 'next/server';
+import { writeLog } from '../../lib/logger';
 import sql from '../../lib/db';
 
-async function writeLog(action) {
-  try {
-    const now = new Date();
-    const date = now.toISOString().split('T')[0];
-    const time = now.toTimeString().split(' ')[0];
-    await sql`
-      INSERT INTO timelogtbl (log_action, log_date, log_time, log_status)
-      VALUES (${action}, ${date}, ${time}, 'active')
-    `;
-  } catch (e) {
-    console.error('Log write failed:', e.message);
-  }
-}
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 // GET /api/items — active items with search, quality filter, sort, pagination
 export async function GET(request) {
@@ -150,10 +140,23 @@ export async function POST(request) {
       RETURNING *
     `;
 
-    await writeLog(`Added item #${result[0].item_id} — "${item_name}"`);
-    return NextResponse.json({ success: true, item: result[0] }, { status: 201 });
+    // ✅ FIXED: properly closed nested try
+    try {
+      await writeLog(`Added item #${result[0].item_id} — "${item_name}"`);
+    } catch (e) {
+      console.warn('Log failed:', e);
+    }
+
+    return NextResponse.json(
+      { success: true, item: result[0] },
+      { status: 201 }
+    );
+
   } catch (error) {
     console.error('POST /api/items error:', error);
-    return NextResponse.json({ error: 'Failed to create item', details: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to create item', details: error.message },
+      { status: 500 }
+    );
   }
 }

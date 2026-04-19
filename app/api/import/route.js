@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import sql from '../../lib/db';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 const REQUIRED_HEADERS = [
   'item_name', 'item_title', 'item_type', 'item_description',
   'item_location', 'item_category', 'item_quality', 'item_size',

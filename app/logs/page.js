@@ -21,7 +21,7 @@ export default function LogsPage() {
       const params = new URLSearchParams({
         search, start: page * PAGE_SIZE, length: PAGE_SIZE,
       });
-      const res = await fetch(`/api/logs?${params}`);
+      const res = await fetch(`/api/logs?${params}`, { cache: 'no-store' });
       const json = await res.json();
       setLogs(json.data || []);
       setTotal(json.recordsTotal || 0);

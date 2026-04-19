@@ -59,7 +59,7 @@ export default function Home() {
         sort_by:      filters.sortBy  || '',
         sort_dir:     filters.sortDir || 'ASC',
       });
-      const res  = await fetch(`/api/items?${params}`);
+      const res  = await fetch(`/api/items?${params}`, { cache: 'no-store' });
       const json = await res.json();
       setItems(json.data || []);
       setTotal(json.recordsTotal || 0);

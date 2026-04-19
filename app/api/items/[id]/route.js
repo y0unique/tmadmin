@@ -1,25 +1,16 @@
 import { NextResponse } from 'next/server';
+import { writeLog } from '../../../lib/logger';
 import sql from '../../../lib/db';
 
-async function writeLog(action) {
-  try {
-    const now = new Date();
-    const date = now.toISOString().split('T')[0];
-    const time = now.toTimeString().split(' ')[0];
-    await sql`
-      INSERT INTO timelogtbl (log_action, log_date, log_time, log_status)
-      VALUES (${action}, ${date}, ${time}, 'active')
-    `;
-  } catch (e) {
-    console.error('Log write failed:', e.message);
-  }
-}
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 // PUT /api/items/[id] — update an item
 export async function PUT(request, { params }) {
   try {
     const { id } = params;
     const body = await request.json();
+
     const {
       item_name, item_title, item_type, item_description, item_location,
       item_category, item_quality, item_size, item_sticker,
@@ -50,15 +41,25 @@ export async function PUT(request, { params }) {
       return NextResponse.json({ error: 'Item not found' }, { status: 404 });
     }
 
-    await writeLog(`Edited item #${id} — "${item_name}"`);
+    // FIXED: properly closed try block
+    try {
+      await writeLog(`Edited item #${id} — "${item_name}"`);
+    } catch (e) {
+      console.warn('Log failed:', e);
+    }
+
     return NextResponse.json({ success: true, item: result[0] });
+
   } catch (error) {
     console.error('PUT /api/items/[id] error:', error);
-    return NextResponse.json({ error: 'Failed to update item', details: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to update item', details: error.message },
+      { status: 500 }
+    );
   }
 }
 
-// DELETE /api/items/[id] — soft delete: set status to 'inactive'
+// DELETE /api/items/[id]
 export async function DELETE(request, { params }) {
   try {
     const { id } = params;
@@ -71,13 +72,26 @@ export async function DELETE(request, { params }) {
     `;
 
     if (result.length === 0) {
-      return NextResponse.json({ error: 'Item not found or already inactive' }, { status: 404 });
+      return NextResponse.json(
+        { error: 'Item not found or already inactive' },
+        { status: 404 }
+      );
     }
 
-    await writeLog(`Removed item #${id} — "${result[0].item_name}" (set to inactive)`);
+    // FIXED here too
+    try {
+      await writeLog(`Removed item #${id} — "${result[0].item_name}" (set to inactive)`);
+    } catch (e) {
+      console.warn('Log failed:', e);
+    }
+
     return NextResponse.json({ success: true, item: result[0] });
+
   } catch (error) {
     console.error('DELETE /api/items/[id] error:', error);
-    return NextResponse.json({ error: 'Failed to deactivate item', details: error.message }, { status: 500 });
+    return NextResponse.json(
+      { error: 'Failed to deactivate item', details: error.message },
+      { status: 500 }
+    );
   }
 }

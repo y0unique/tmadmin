@@ -24,7 +24,7 @@ export default function ArchivedPage() {
       const params = new URLSearchParams({
         search, start: page * PAGE_SIZE, length: PAGE_SIZE,
       });
-      const res  = await fetch(`/api/archived?${params}`);
+      const res  = await fetch(`/api/archived?${params}`, { cache: 'no-store' });
       const json = await res.json();
       setItems(json.data || []);
       setTotal(json.recordsTotal || 0);
