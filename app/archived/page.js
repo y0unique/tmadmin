@@ -86,6 +86,7 @@ export default function ArchivedPage() {
           <table className={styles.table}>
             <thead>
               <tr>
+                <th className={styles.th}>Image</th>
                 <th className={styles.th}>Name</th>
                 <th className={styles.th}>Type</th>
                 <th className={styles.th}>Category</th>
@@ -113,6 +114,18 @@ export default function ArchivedPage() {
                 <tr key={item.item_id}
                   className={`${styles.tr} ${restoringId === item.item_id ? styles.trRestoring : ''}`}
                   style={{ animationDelay: `${i * 30}ms` }}>
+                    <td className={styles.td}>
+                    {item.item_image && item.item_image !== 'n/a' ? (
+                      <img
+                        src={item.item_image}
+                        alt={item.item_name}
+                        className={styles.tableImg}
+                        onError={e => { e.target.style.display = 'none'; }}
+                      />
+                    ) : (
+                      <div className={styles.tableImgEmpty}>—</div>
+                    )}
+                  </td>
                   <td className={`${styles.td} ${styles.nameCell}`}>{item.item_name}</td>
                   <td className={styles.td}>{item.item_type}</td>
                   <td className={styles.td}>{item.item_category}</td>
