@@ -1,10 +1,12 @@
 .container {
   position: fixed;
-  bottom: 1.5rem;
-  right: 1.5rem;
+  top: 1.25rem;
+  left: 50%;
+  transform: translateX(-50%);
   z-index: 9999;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 8px;
   pointer-events: none;
 }
@@ -13,21 +15,29 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 12px 16px;
+  padding: 12px 20px;
   border-radius: 4px;
   font-family: var(--font-mono);
   font-size: 0.78rem;
   letter-spacing: 0.03em;
-  min-width: 260px;
-  max-width: 380px;
+  min-width: 280px;
+  max-width: 480px;
   pointer-events: all;
-  box-shadow: var(--shadow);
-  animation: slideIn 0.2s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  animation: slideDown 0.2s ease;
   border: 1px solid transparent;
 }
-@keyframes slideIn {
-  from { opacity: 0; transform: translateX(20px); }
-  to   { opacity: 1; transform: translateX(0); }
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .success {
@@ -35,16 +45,19 @@
   border-color: #22c55e;
   color: var(--text);
 }
+
 .error {
   background: var(--surface);
   border-color: var(--accent2);
   color: var(--text);
 }
+
 .loading {
   background: var(--surface);
   border-color: var(--border);
   color: var(--text);
 }
+
 .info {
   background: var(--surface);
   border-color: #3b82f6;
@@ -59,21 +72,41 @@
   align-items: center;
   justify-content: center;
 }
-.success .icon { color: #22c55e; }
-.error   .icon { color: var(--accent2); }
-.info    .icon { color: #3b82f6; font-weight: 700; font-style: italic; }
+
+.success .icon {
+  color: #22c55e;
+}
+
+.error .icon {
+  color: var(--accent2);
+}
+
+.info .icon {
+  color: #3b82f6;
+  font-weight: 700;
+  font-style: italic;
+}
 
 .spinner {
   display: block;
-  width: 14px; height: 14px;
+  width: 14px;
+  height: 14px;
   border: 2px solid var(--border);
   border-top-color: var(--accent);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
 }
-@keyframes spin { to { transform: rotate(360deg); } }
 
-.message { flex: 1; line-height: 1.4; }
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.message {
+  flex: 1;
+  line-height: 1.4;
+}
 
 .close {
   background: transparent;
@@ -85,4 +118,7 @@
   transition: color 0.15s;
   flex-shrink: 0;
 }
-.close:hover { color: var(--text); }
+
+.close:hover {
+  color: var(--text);
+}

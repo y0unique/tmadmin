@@ -65,7 +65,7 @@ export default function ArchivedPage() {
         <div className={styles.pageHead}>
           <div>
             <h1 className={styles.pageTitle}>Archived Items</h1>
-            <p className={styles.pageSub}>Inactive items removed from inventory. Restore to make them active again.</p>
+            {/* <p className={styles.pageSub}>Inactive items removed from inventory. Restore to make them active again.</p> */}
           </div>
           <span className={styles.totalBadge}>{total} ARCHIVED</span>
         </div>

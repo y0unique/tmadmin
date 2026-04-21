@@ -180,11 +180,25 @@
 
 /* PAGINATION */
 .paginationBar {
-  display: flex; align-items: center;
+  display: flex;
+  align-items: center;
   justify-content: space-between;
-  flex-wrap: wrap; gap: 1rem;
-  margin-top: 1.25rem; padding: 0 0.25rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+  padding: 0 0.25rem;
 }
+
+.paginationBarBottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-top: 1.25rem;
+  padding: 0 0.25rem;
+}
+
 .paginationInfo {
   font-family: var(--font-mono); font-size: 0.72rem;
   color: var(--muted); letter-spacing: 0.05em;
@@ -439,3 +453,102 @@
   color: #ef4444;
   white-space: nowrap;
 }
+
+/* ── TABLE IMAGE ─────────────────────────────────────────────────────────── */
+.tableImg {
+  width: 40px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 2px;
+  border: 1px solid var(--border);
+  background: var(--surface2);
+  display: block;
+}
+.tableImgEmpty {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--border);
+  border: 1px dashed var(--border);
+  border-radius: 2px;
+}
+
+/* ── PAGINATION LEFT ─────────────────────────────────────────────────────── */
+.paginationLeft {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+/* ── PAGE SIZE SELECTOR ──────────────────────────────────────────────────── */
+.pageSizeWrap {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pageSizeLabel {
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+}
+.pageSizeSelect {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 4px 8px;
+  border-radius: 2px;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.pageSizeSelect:focus { border-color: var(--accent); }
+.pageSizeSelect option { background: var(--surface); }
+
+/* ── PAGE JUMP ───────────────────────────────────────────────────────────── */
+.pageJumpWrap {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  margin-left: 8px;
+}
+.pageJumpInput {
+  width: 52px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  padding: 5px 6px;
+  border-radius: 2px;
+  outline: none;
+  text-align: center;
+  transition: border-color 0.15s;
+  /* hide number spinners */
+  -moz-appearance: textfield;
+}
+.pageJumpInput::-webkit-outer-spin-button,
+.pageJumpInput::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+.pageJumpInput:focus { border-color: var(--accent); }
+.pageJumpInput::placeholder { color: var(--muted); }
+
+.pageJumpBtn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--muted);
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  letter-spacing: 0.06em;
+  padding: 5px 10px;
+  border-radius: 2px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.pageJumpBtn:hover { border-color: var(--accent); color: var(--accent); }

@@ -12,6 +12,7 @@ import styles from './page.module.css';
 // Visible table columns only — Description, Location, Category hidden (shown in modal)
 const COLUMNS = [
   { key: 'item_status',   label: 'Status' },
+  { key: 'item_image',    label: 'Image' },
   { key: 'item_name',     label: 'Name' },
   { key: 'item_type',     label: 'Type' },
   { key: 'item_category', label: 'Category' },
@@ -22,7 +23,15 @@ const COLUMNS = [
   { key: 'item_location', label: 'Location' },
 ];
 
-const PAGE_SIZE = 10;
+function GoIcon() {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="16" height="16">
+      <polygon points="8 5 19 12 8 19" />
+    </svg>
+  );
+}
+
+const PAGE_SIZES = [5, 10, 20, 50, 100];
 const DEFAULT_FILTERS = { quality: '', category: '', sortBy: '', sortDir: 'ASC', dateFrom: '', dateTo: '' };
 
 export default function Home() {
@@ -33,6 +42,7 @@ export default function Home() {
   const [orderColumn, setOrderColumn] = useState('item_id');
   const [orderDir, setOrderDir]   = useState('ASC');
   const [loading, setLoading]     = useState(true);
+  const [pageSize, setPageSize]   = useState(20);
   const [deletingId, setDeletingId] = useState(null); // track which row is being deleted
 
   // Modal states
@@ -52,8 +62,8 @@ export default function Home() {
         search,
         order_column: filters.sortBy || orderColumn,
         order_dir:    filters.sortDir || orderDir,
-        start:        page * PAGE_SIZE,
-        length:       PAGE_SIZE,
+        start:        page * pageSize,
+        length:       pageSize,
         quality:      filters.quality  || '',
         category:     filters.category || '',
         sort_by:      filters.sortBy  || '',
@@ -68,11 +78,12 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [search, orderColumn, orderDir, page, filters]);
+  }, [search, orderColumn, orderDir, page, filters, pageSize]);
 
   useEffect(() => { fetchItems(); }, [fetchItems]);
 
   const handleFilterChange = (f) => { setFilters(f); setPage(0); };
+  const handlePageSizeChange = (e) => { setPageSize(parseInt(e.target.value)); setPage(0); };
 
   const openAdd  = () => { setViewItem(null); setModalMode('add'); };
   const openView = (item) => { setViewItem(item); setModalMode('view'); };
@@ -99,9 +110,9 @@ export default function Home() {
     filters.dateFrom && filters.dateTo,
   ].filter(Boolean).length;
 
-  const totalPages = Math.ceil(total / PAGE_SIZE);
-  const from = total === 0 ? 0 : page * PAGE_SIZE + 1;
-  const to   = Math.min((page + 1) * PAGE_SIZE, total);
+  const totalPages = Math.ceil(total / pageSize);
+  const from = total === 0 ? 0 : page * pageSize + 1;
+  const to   = Math.min((page + 1) * pageSize, total);
 
   return (
     <div className={styles.layout}>
@@ -114,7 +125,7 @@ export default function Home() {
         {/* Page Title */}
         <div className={styles.pageHead}>
           <h1 className={styles.pageTitle}>Inventory Items</h1>
-          <p className={styles.pageSub}>Click an item name to view or edit details.</p>
+          {/* <p className={styles.pageSub}>Click an item name to view or edit details.</p> */}
         </div>
 
         {/* Toolbar */}
@@ -157,6 +168,62 @@ export default function Home() {
               </svg>
               ADD ITEM
             </button>
+          </div>
+        </div>
+
+        {/* Pagination */}
+        <div className={styles.paginationBar}>
+          <div className={styles.paginationLeft}>
+            <span className={styles.paginationInfo}>
+              {total === 0 ? 'No results' : `Showing ${from}–${to} of ${total} items`}
+            </span>
+            {/* Page size selector */}
+            <div className={styles.pageSizeWrap}>
+              <span className={styles.pageSizeLabel}>Show</span>
+              <select className={styles.pageSizeSelect} value={pageSize} onChange={handlePageSizeChange}>
+                {PAGE_SIZES.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <span className={styles.pageSizeLabel}>rows</span>
+            </div>
+          </div>
+
+          <div className={styles.paginationControls}>
+            <button className={styles.pageBtn} onClick={() => setPage(0)} disabled={page === 0}>«</button>
+            <button className={styles.pageBtn} onClick={() => setPage(p => Math.max(0,p-1))} disabled={page === 0}>‹ PREV</button>
+            <div className={styles.pageNumbers}>
+              {[...Array(totalPages)].map((_, i) => {
+                if (i === 0 || i === totalPages-1 || Math.abs(i-page) <= 1)
+                  return <button key={i} className={`${styles.pageNum} ${i===page ? styles.pageNumActive:''}`} onClick={() => setPage(i)}>{i+1}</button>;
+                if (Math.abs(i-page) === 2)
+                  return <span key={i} className={styles.pageEllipsis}>…</span>;
+                return null;
+              })}
+            </div>
+            <button className={styles.pageBtn} onClick={() => setPage(p => Math.min(totalPages-1,p+1))} disabled={page >= totalPages-1}>NEXT ›</button>
+            <button className={styles.pageBtn} onClick={() => setPage(totalPages-1)} disabled={page >= totalPages-1}>»</button>
+
+            {/* Custom page jump */}
+            {totalPages > 1 && (
+              <form className={styles.pageJumpWrap} onSubmit={e => {
+                e.preventDefault();
+                const val = parseInt(e.target.pageJump.value);
+                if (!isNaN(val) && val >= 1 && val <= totalPages) {
+                  setPage(val - 1);
+                  e.target.pageJump.value = '';
+                }
+              }}>
+                <span className={styles.pageSizeLabel}>Jump to</span>
+                <input
+                  name="pageJump"
+                  type="number"
+                  min={1}
+                  max={totalPages}
+                  className={styles.pageJumpInput}
+                  placeholder={page + 1}
+                />
+                <button type="submit" className={styles.pageJumpBtn}><GoIcon /></button>
+              </form>
+            )}
           </div>
         </div>
 
@@ -218,6 +285,18 @@ export default function Home() {
                     )}
                   </td>
                   <td className={styles.td}>
+                    {item.item_image && item.item_image !== 'n/a' ? (
+                      <img
+                        src={item.item_image}
+                        alt={item.item_name}
+                        className={styles.tableImg}
+                        onError={e => { e.target.style.display = 'none'; }}
+                      />
+                    ) : (
+                      <div className={styles.tableImgEmpty}>—</div>
+                    )}
+                  </td>
+                  <td className={styles.td}>
                     <button className={styles.nameBtn} onClick={() => openView(item)}>
                       {item.item_name}
                     </button>
@@ -249,10 +328,21 @@ export default function Home() {
         </div>
 
         {/* Pagination */}
-        <div className={styles.paginationBar}>
-          <span className={styles.paginationInfo}>
-            {total === 0 ? 'No results' : `Showing ${from}–${to} of ${total} items`}
-          </span>
+        <div className={styles.paginationBarBottom}>
+          <div className={styles.paginationLeft}>
+            <span className={styles.paginationInfo}>
+              {total === 0 ? 'No results' : `Showing ${from}–${to} of ${total} items`}
+            </span>
+            {/* Page size selector */}
+            <div className={styles.pageSizeWrap}>
+              <span className={styles.pageSizeLabel}>Show</span>
+              <select className={styles.pageSizeSelect} value={pageSize} onChange={handlePageSizeChange}>
+                {PAGE_SIZES.map(s => <option key={s} value={s}>{s}</option>)}
+              </select>
+              <span className={styles.pageSizeLabel}>rows</span>
+            </div>
+          </div>
+
           <div className={styles.paginationControls}>
             <button className={styles.pageBtn} onClick={() => setPage(0)} disabled={page === 0}>«</button>
             <button className={styles.pageBtn} onClick={() => setPage(p => Math.max(0,p-1))} disabled={page === 0}>‹ PREV</button>
@@ -267,6 +357,29 @@ export default function Home() {
             </div>
             <button className={styles.pageBtn} onClick={() => setPage(p => Math.min(totalPages-1,p+1))} disabled={page >= totalPages-1}>NEXT ›</button>
             <button className={styles.pageBtn} onClick={() => setPage(totalPages-1)} disabled={page >= totalPages-1}>»</button>
+
+            {/* Custom page jump */}
+            {totalPages > 1 && (
+              <form className={styles.pageJumpWrap} onSubmit={e => {
+                e.preventDefault();
+                const val = parseInt(e.target.pageJump.value);
+                if (!isNaN(val) && val >= 1 && val <= totalPages) {
+                  setPage(val - 1);
+                  e.target.pageJump.value = '';
+                }
+              }}>
+                <span className={styles.pageSizeLabel}>Jump to to</span>
+                <input
+                  name="pageJump"
+                  type="number"
+                  min={1}
+                  max={totalPages}
+                  className={styles.pageJumpInput}
+                  placeholder={page + 1}
+                />
+                <button type="submit" className={styles.pageJumpBtn}><GoIcon /></button>
+              </form>
+            )}
           </div>
         </div>
 
