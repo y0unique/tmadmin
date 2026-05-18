@@ -43,30 +43,17 @@ export default function Sidebar({ open, onClose }) {
               </svg>
             </button>
 
-            {/* Dropdown items */}
             {inventoryOpen && (
               <div className={styles.navSubList}>
-                <a
-                  href="/"
-                  className={`${styles.navSubItem} ${pathname === '/' ? styles.navSubItemActive : ''}`}
-                  onClick={onClose}
-                >
+                <a href="/" className={`${styles.navSubItem} ${pathname === '/' ? styles.navSubItemActive : ''}`} onClick={onClose}>
                   <span className={styles.subDot} />
                   Item List
                 </a>
-                <a
-                  href="/archived"
-                  className={`${styles.navSubItem} ${pathname === '/archived' ? styles.navSubItemActive : ''}`}
-                  onClick={onClose}
-                >
+                <a href="/archived" className={`${styles.navSubItem} ${pathname === '/archived' ? styles.navSubItemActive : ''}`} onClick={onClose}>
                   <span className={styles.subDot} />
                   Archived Items
                 </a>
-                <a
-                  href="/import"
-                  className={`${styles.navSubItem} ${pathname === '/import' ? styles.navSubItemActive : ''}`}
-                  onClick={onClose}
-                >
+                <a href="/import" className={`${styles.navSubItem} ${pathname === '/import' ? styles.navSubItemActive : ''}`} onClick={onClose}>
                   <span className={styles.subDot} />
                   Import Data
                 </a>
@@ -75,11 +62,7 @@ export default function Sidebar({ open, onClose }) {
           </div>
 
           {/* Logs */}
-          <a
-            href="/logs"
-            className={`${styles.navItem} ${pathname === '/logs' ? styles.navItemActive : ''}`}
-            onClick={onClose}
-          >
+          <a href="/logs" className={`${styles.navItem} ${pathname === '/logs' ? styles.navItemActive : ''}`} onClick={onClose}>
             <span className={styles.navIcon}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
@@ -91,6 +74,20 @@ export default function Sidebar({ open, onClose }) {
             </span>
             <span className={styles.navLabel}>Logs</span>
             {pathname === '/logs' && <span className={styles.navActiveDot} />}
+          </a>
+
+          {/* Users — System Admin only (Phase 3 will gate by role) */}
+          <a href="/users" className={`${styles.navItem} ${pathname === '/users' ? styles.navItemActive : ''}`} onClick={onClose}>
+            <span className={styles.navIcon}>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+                <circle cx="9" cy="7" r="4" />
+                <path d="M23 21v-2a4 4 0 0 0-3-3.87" />
+                <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+              </svg>
+            </span>
+            <span className={styles.navLabel}>Users</span>
+            {pathname === '/users' && <span className={styles.navActiveDot} />}
           </a>
 
         </nav>

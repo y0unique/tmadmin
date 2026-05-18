@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import sql from '../../lib/db';
+import { decodeType, decodeCategory, decodeQuality, decodeSize, decodeSticker } from '../../lib/lookup';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
