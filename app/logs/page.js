@@ -2,6 +2,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import PageLayout from '../components/PageLayout';
 import styles from './logs.module.css';
+import { useDebounce } from '../lib/useDebounce';
 
 const PAGE_SIZES = [5, 10, 20, 50, 100];
 
@@ -18,6 +19,7 @@ export default function LogsPage() {
   const [logs, setLogs]         = useState([]);
   const [total, setTotal]       = useState(0);
   const [search, setSearch]     = useState('');
+  const debouncedSearch         = useDebounce(search, 400);
   const [page, setPage]         = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [loading, setLoading]   = useState(true);
@@ -37,7 +39,7 @@ export default function LogsPage() {
     } finally {
       setLoading(false);
     }
-  }, [search, page, pageSize]);
+  }, [debouncedSearch, page, pageSize]);
 
   useEffect(() => { fetchLogs(); }, [fetchLogs]);
 

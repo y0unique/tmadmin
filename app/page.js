@@ -7,6 +7,7 @@ import FilterPanel from './components/FilterPanel';
 import SummaryCard from './components/SummaryCard';
 import { useToast } from './components/Toast';
 import styles from './page.module.css';
+import { useDebounce } from './lib/useDebounce';
 
 const PAGE_SIZES = [5, 10, 20, 50, 100];
 const DEFAULT_FILTERS = {
@@ -19,6 +20,7 @@ export default function Home() {
   const [items, setItems]       = useState([]);
   const [total, setTotal]       = useState(0);
   const [search, setSearch]     = useState('');
+  const debouncedSearch         = useDebounce(search, 400);
   const [page, setPage]         = useState(0);
   const [pageSize, setPageSize] = useState(10);
   const [loading, setLoading]   = useState(true);
@@ -55,7 +57,7 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, [search, page, pageSize, filters]);
+  }, [debouncedSearch, page, pageSize, filters]);
 
   useEffect(() => { fetchItems(); }, [fetchItems]);
 
