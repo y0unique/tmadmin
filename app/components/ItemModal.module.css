@@ -144,7 +144,7 @@
   color: var(--text);
 }
 
-/* CONTENT WRAPPER — side by side when image exists */
+/* CONTENT WRAPPER - side by side when image exists */
 .contentWrap {
   flex: 1;
   overflow-y: auto;
@@ -163,7 +163,7 @@
   overflow-y: auto;
 }
 
-/* IMAGE SIDE — desktop: right panel, mobile: bottom */
+/* IMAGE SIDE - desktop: right panel, mobile: bottom */
 .imageSide {
   width: 280px;
   flex-shrink: 0;

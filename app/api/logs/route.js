@@ -4,7 +4,7 @@ import sql from '../../lib/db';
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-// GET /api/logs — fetch logs with search and pagination
+// GET /api/logs - fetch logs with search and pagination
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);

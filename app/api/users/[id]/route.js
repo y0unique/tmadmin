@@ -45,7 +45,7 @@ export async function PUT(request, { params }) {
     if (result.length === 0)
       return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
-    try { await writeLog(`Edited user #${id} — "${name}"`); } catch(e) { console.error(e); }
+    try { await writeLog(`Edited user #${id} - "${name}"`); } catch(e) { console.error(e); }
     return NextResponse.json({ success: true, user: result[0] });
   } catch (error) {
     if (error.message?.includes('unique'))
@@ -76,7 +76,7 @@ export async function PATCH(request, { params }) {
       return NextResponse.json({ error: 'User not found or cannot modify System Admin.' }, { status: 404 });
 
     const action = u_status === 'active' ? 'Enabled' : 'Disabled';
-    try { await writeLog(`${action} user #${id} — "${result[0].u_name}"`); } catch(e) { console.error(e); }
+    try { await writeLog(`${action} user #${id} - "${result[0].u_name}"`); } catch(e) { console.error(e); }
     return NextResponse.json({ success: true, user: result[0] });
   } catch (error) {
     console.error('PATCH /api/users/[id] error:', error);

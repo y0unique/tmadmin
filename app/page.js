@@ -179,7 +179,7 @@ export default function Home() {
         {item.item_image && item.item_image !== 'n/a'
           ? <img src={item.item_image} alt={item.item_name} className={styles.tableImg}
               onError={e => { e.target.style.display='none'; }} />
-          : <div className={styles.tableImgEmpty}>—</div>
+          : <div className={styles.tableImgEmpty}>-</div>
         }
       </td>
       {/* Name */}

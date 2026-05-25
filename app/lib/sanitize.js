@@ -75,7 +75,7 @@ export function sanitizeForm(form) {
     if (result.blocked) blocked = true;
   }
 
-  // Numeric fields — strip non-numeric chars
+  // Numeric fields - strip non-numeric chars
   for (const field of ['item_acqprice', 'item_srp', 'item_quantity']) {
     if (!(field in form)) continue;
     const val = String(form[field]).replace(/[^0-9.]/g, '');
@@ -86,7 +86,7 @@ export function sanitizeForm(form) {
 }
 
 /**
- * Backend sanitizer — for API route use
+ * Backend sanitizer - for API route use
  * Strips HTML, trims, escapes dangerous chars
  */
 export function sanitizeBackend(value) {

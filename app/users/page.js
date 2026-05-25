@@ -173,7 +173,7 @@ export default function UsersPage() {
         {/* Actions */}
         <td className={styles.td}>
           <div className={styles.actions}>
-            {/* Edit — disabled for system admin */}
+            {/* Edit - disabled for system admin */}
             {!isSystem && (
               <button className={styles.editBtn} onClick={() => setModalUser(user)}>
                 Edit

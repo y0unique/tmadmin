@@ -66,7 +66,7 @@ export async function PUT(request, { params }) {
 
     if (result.length === 0) return NextResponse.json({ error: 'Item not found' }, { status: 404 });
 
-    try { await writeLog(`Edited item #${id} — "${name}"`); } catch (e) { console.error(e); }
+    try { await writeLog(`Edited item #${id} - "${name}"`); } catch (e) { console.error(e); }
 
     return NextResponse.json({ success: true, item: decodeItem(result[0]) });
   } catch (error) {
@@ -84,7 +84,7 @@ export async function DELETE(request, { params }) {
       RETURNING *
     `;
     if (result.length === 0) return NextResponse.json({ error: 'Item not found or already inactive' }, { status: 404 });
-    try { await writeLog(`Removed item #${id} — "${result[0].item_name}" (set to inactive)`); } catch (e) { console.error(e); }
+    try { await writeLog(`Removed item #${id} - "${result[0].item_name}" (set to inactive)`); } catch (e) { console.error(e); }
     return NextResponse.json({ success: true, item: result[0] });
   } catch (error) {
     console.error('DELETE /api/items/[id] error:', error);

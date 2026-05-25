@@ -16,7 +16,7 @@ async function writeLog(action) {
   } catch (e) { console.error('Log write failed:', e.message); }
 }
 
-// GET /api/export — returns CSV of filtered active items
+// GET /api/export - returns CSV of filtered active items
 export async function GET(request) {
   try {
     const { searchParams } = new URL(request.url);
@@ -41,7 +41,7 @@ export async function GET(request) {
 
     let data;
 
-    // Build query based on filters — ASC or DESC
+    // Build query based on filters - ASC or DESC
     if (safeDir === 'ASC') {
       data = await sql`
         SELECT

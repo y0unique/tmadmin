@@ -21,7 +21,7 @@ export async function PUT(request, { params }) {
     }
 
     try {
-      await writeLog(`Restored item #${id} — "${result[0].item_name}" (set back to active)`);
+      await writeLog(`Restored item #${id} - "${result[0].item_name}" (set back to active)`);
     } catch (logErr) {
       console.error('Log failed:', logErr.message);
     }

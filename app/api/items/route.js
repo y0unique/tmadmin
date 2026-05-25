@@ -165,7 +165,7 @@ export async function POST(request) {
       RETURNING *
     `;
 
-    try { await writeLog(`Added item #${result[0].item_id} — "${name}"`); } catch (e) { console.error(e); }
+    try { await writeLog(`Added item #${result[0].item_id} - "${name}"`); } catch (e) { console.error(e); }
 
     return NextResponse.json({ success: true, item: decodeItem(result[0]) }, { status: 201 });
   } catch (error) {

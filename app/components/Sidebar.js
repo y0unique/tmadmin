@@ -76,7 +76,7 @@ export default function Sidebar({ open, onClose }) {
             {pathname === '/logs' && <span className={styles.navActiveDot} />}
           </a>
 
-          {/* Users — System Admin only (Phase 3 will gate by role) */}
+          {/* Users - System Admin only (Phase 3 will gate by role) */}
           <a href="/users" className={`${styles.navItem} ${pathname === '/users' ? styles.navItemActive : ''}`} onClick={onClose}>
             <span className={styles.navIcon}>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">

@@ -65,7 +65,7 @@ function ViewField({ label, value, wide }) {
   return (
     <div className={`${styles.field} ${wide ? styles.fieldWide : ''}`}>
       <label className={styles.label}>{label}</label>
-      <div className={styles.viewValue}>{value || <span className={styles.emptyVal}>—</span>}</div>
+      <div className={styles.viewValue}>{value || <span className={styles.emptyVal}>-</span>}</div>
     </div>
   );
 }
@@ -190,8 +190,8 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
                   <ViewField label="Size"        value={item?.item_size} />
                   <ViewField label="Location"    value={item?.item_location} />
                   <ViewField label="Sticker"     value={item?.item_sticker} />
-                  <ViewField label="Acq. Price"  value={item?.item_acqprice ? `₱${parseFloat(item.item_acqprice).toLocaleString()}` : '—'} />
-                  <ViewField label="SRP"         value={item?.item_srp ? `₱${parseFloat(item.item_srp).toLocaleString()}` : '—'} />
+                  <ViewField label="Acq. Price"  value={item?.item_acqprice ? `₱${parseFloat(item.item_acqprice).toLocaleString()}` : '-'} />
+                  <ViewField label="SRP"         value={item?.item_srp ? `₱${parseFloat(item.item_srp).toLocaleString()}` : '-'} />
                   <ViewField label="Quantity"    value={item?.item_quantity} />
                   <ViewField label="Description" value={item?.item_description} wide />
                 </div>
@@ -308,7 +308,7 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
                   <label className={styles.label}>Image Link</label>
                   <input className={styles.input} name="item_image" value={form.item_image === 'n/a' ? '' : form.item_image}
                     onChange={handleChange} placeholder="https://drive.google.com/file/d/..." />
-                  <span className={styles.hint}>Paste a Public link — it will be converted automatically</span>
+                  <span className={styles.hint}>Paste a Public link - it will be converted automatically</span>
                 </div>
 
 
@@ -339,7 +339,7 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
           )}
         </div>
 
-        {/* Footer — only for edit/add mode */}
+        {/* Footer - only for edit/add mode */}
         {(!locked || isAdd) && (
           <div className={styles.modalFooter}>
             <button type="button" className={styles.cancelBtn} onClick={onClose}>Cancel</button>

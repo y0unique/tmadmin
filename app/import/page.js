@@ -231,12 +231,12 @@ export default function ImportPage() {
                 <div className={styles.resultDetails}>
                   <div className={styles.resultRow}>
                     <span className={styles.resultKey}>Inserted IDs</span>
-                    <span className={styles.resultVal}>{result.insertedIds?.join(', ') || '—'}</span>
+                    <span className={styles.resultVal}>{result.insertedIds?.join(', ') || '-'}</span>
                   </div>
                   {result.deactivated > 0 && (
                     <div className={styles.resultRow}>
                       <span className={styles.resultKey}>Deactivated IDs</span>
-                      <span className={styles.resultVal}>{result.deactivatedIds?.join(', ') || '—'}</span>
+                      <span className={styles.resultVal}>{result.deactivatedIds?.join(', ') || '-'}</span>
                     </div>
                   )}
                   {result.errors?.length > 0 && (

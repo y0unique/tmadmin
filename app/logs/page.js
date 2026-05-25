@@ -43,7 +43,7 @@ export default function LogsPage() {
 
   useEffect(() => { fetchLogs(); }, [fetchLogs]);
 
-  const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' }) : '—';
+  const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' }) : '-';
 
   const columns = [
     { label: '#' }, { label: 'Action' }, { label: 'Date' }, { label: 'Time' },

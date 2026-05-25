@@ -7,11 +7,11 @@ import {
 import styles from './FilterPanel.module.css';
 
 const SORT_OPTIONS = [
-  { value: '',                      label: '— None —' },
-  { value: 'item_dateadded-ASC',    label: 'Date Added — Oldest first' },
-  { value: 'item_dateadded-DESC',   label: 'Date Added — Newest first' },
-  { value: 'item_lastupdated-ASC',  label: 'Last Updated — Oldest first' },
-  { value: 'item_lastupdated-DESC', label: 'Last Updated — Newest first' },
+  { value: '',                      label: '- None -' },
+  { value: 'item_dateadded-ASC',    label: 'Date Added - Oldest first' },
+  { value: 'item_dateadded-DESC',   label: 'Date Added - Newest first' },
+  { value: 'item_lastupdated-ASC',  label: 'Last Updated - Oldest first' },
+  { value: 'item_lastupdated-DESC', label: 'Last Updated - Newest first' },
 ];
 
 function FilterSelect({ label, name, value, onChange, options }) {
@@ -23,7 +23,7 @@ function FilterSelect({ label, name, value, onChange, options }) {
         value={value}
         onChange={e => onChange(name, e.target.value)}
       >
-        <option value="">— All —</option>
+        <option value="">- All -</option>
         {options.map(o => (
           <option key={o.value} value={o.value}>{o.label}</option>
         ))}

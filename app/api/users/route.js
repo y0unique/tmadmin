@@ -81,7 +81,7 @@ export async function POST(request) {
       RETURNING u_id, u_name, u_email, u_type, u_status
     `;
 
-    try { await writeLog(`Added user #${result[0].u_id} — "${name}" (${email})`); } catch(e) { console.error(e); }
+    try { await writeLog(`Added user #${result[0].u_id} - "${name}" (${email})`); } catch(e) { console.error(e); }
     return NextResponse.json({ success: true, user: result[0] }, { status: 201 });
   } catch (error) {
     if (error.message?.includes('unique'))

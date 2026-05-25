@@ -1,4 +1,4 @@
-# Toy Mafia Inventory — Next.js + Neon
+# Toy Mafia Inventory - Next.js + Neon
 
 Inventory management system converted from PHP/MySQL to Next.js + PostgreSQL (Neon), ready for Vercel deployment.
 

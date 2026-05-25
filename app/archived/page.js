@@ -50,7 +50,7 @@ export default function ArchivedPage() {
     }
   };
 
-  const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' }) : '—';
+  const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' }) : '-';
 
   const columns = [
     { label: 'Name' }, { label: 'Type' }, { label: 'Category' },
