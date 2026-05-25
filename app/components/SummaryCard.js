@@ -70,12 +70,14 @@ export default function SummaryCard() {
   if (!mounted) return null;
 
   // Example values for display
-  const exSrp = 500, exQty = 10, exAcq = 250;
+  const exSrp = 500, exQty = 10, exAcq = 250, exSold = 3;
   const exWSP     = exSrp * exQty;
   const exWSPmSRP = exWSP - exSrp;
   const exSpFee   = exWSP - exSrp * (1 - spRate / 100);
   const exSale    = exSrp * (1 - saleRate / 100);
   const exMUP     = exSrp / exAcq;
+  const exRevenue = exSrp * exSold;
+  const exProfit  = (exSrp - exAcq) * exSold;
 
   const fmt = (v) => `₱${parseFloat(v).toLocaleString('en-PH', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
@@ -145,6 +147,34 @@ export default function SummaryCard() {
           </div>
           <div className={styles.example}>
             e.g. {fmt(exWSP)} − ₱{exSrp} × {100 - spRate}% = <strong>{fmt(exSpFee)}</strong>
+          </div>
+        </div>
+
+        {/* Revenue */}
+        <div className={styles.statBox}>
+          <div className={styles.statTop}>
+            <span className={styles.statName}>Revenue</span>
+            <span className={styles.statBadge}>Sold</span>
+          </div>
+          <div className={styles.formula}>
+            <span className={styles.formulaText}>SRP × Sold Qty</span>
+          </div>
+          <div className={styles.example}>
+            e.g. ₱{exSrp} × {exSold} = <strong>{fmt(exRevenue)}</strong>
+          </div>
+        </div>
+
+        {/* Profit */}
+        <div className={styles.statBox}>
+          <div className={styles.statTop}>
+            <span className={styles.statName}>Profit</span>
+            <span className={`${styles.statBadge} ${styles.statBadgeProfit}`}>Net</span>
+          </div>
+          <div className={styles.formula}>
+            <span className={styles.formulaText}>(SRP − Acq) × Sold Qty</span>
+          </div>
+          <div className={styles.example}>
+            e.g. (₱{exSrp} − ₱{exAcq}) × {exSold} = <strong>{fmt(exProfit)}</strong>
           </div>
         </div>
 

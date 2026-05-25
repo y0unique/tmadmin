@@ -92,7 +92,7 @@ export async function GET(request) {
     const headers = [
       'item_name', 'item_title', 'item_type', 'item_description', 'item_location',
       'item_category', 'item_quality', 'item_size', 'item_sticker',
-      'item_acqprice', 'item_srp', 'item_quantity', 'item_image',
+      'item_acqprice', 'item_srp', 'item_quantity', ,'item_sold', 'item_image',
     ];
 
     const escape = (val) => {
@@ -115,6 +115,7 @@ export async function GET(request) {
       item.item_quality,
       item.item_srp,
       item.item_quantity,
+      item.item_sold,
       item.item_image,
       item.item_status,
       formatDate(item.item_dateadded),

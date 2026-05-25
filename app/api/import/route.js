@@ -10,7 +10,7 @@ export const revalidate = 0;
 const REQUIRED_HEADERS = [
   'item_name', 'item_title', 'item_type', 'item_description',
   'item_location', 'item_category', 'item_quality', 'item_size',
-  'item_sticker', 'item_acqprice', 'item_srp', 'item_quantity', 'item_image',
+  'item_sticker', 'item_acqprice', 'item_srp', 'item_quantity', 'item_sold', 'item_image',
 ];
 
 function parseCSV(text) {
@@ -71,7 +71,7 @@ export async function POST(request) {
           INSERT INTO tbl_items
             (item_name, item_title, item_type, item_description, item_location,
              item_category, item_quality, item_size, item_sticker,
-             item_acqprice, item_srp, item_quantity, item_image, item_status)
+             item_acqprice, item_srp, item_quantity, item_sold, item_image, item_status)
           VALUES
             (${sanitizeBackend(row.item_name)},
              ${sanitizeBackend(row.item_title)},
@@ -85,6 +85,7 @@ export async function POST(request) {
              ${parseFloat(row.item_acqprice) || 0},
              ${parseFloat(row.item_srp) || 0},
              ${parseInt(row.item_quantity) || 0},
+             ${parseInt(row.item_sold) || 0},
              ${sanitizeBackend(row.item_image) || 'n/a'},
              'active')
           RETURNING item_id

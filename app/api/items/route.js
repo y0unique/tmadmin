@@ -157,11 +157,11 @@ export async function POST(request) {
       INSERT INTO tbl_items
         (item_name, item_title, item_type, item_description, item_location,
          item_category, item_quality, item_size, item_sticker,
-         item_acqprice, item_srp, item_quantity, item_image, item_status)
+         item_acqprice, item_srp, item_quantity, item_sold, item_image, item_status)
       VALUES
         (${name}, ${title}, ${type}, ${description}, ${location},
          ${category}, ${quality}, ${size}, ${sticker},
-         ${parseFloat(item_acqprice) || 0}, ${srp}, ${quantity}, ${image}, 'active')
+         ${parseFloat(item_acqprice) || 0}, ${srp}, ${quantity}, ${parseInt(body.item_sold) || 0}, ${image}, 'active')
       RETURNING *
     `;
 

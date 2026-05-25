@@ -101,6 +101,7 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
         item_acqprice:    item.item_acqprice    || '',
         item_srp:         item.item_srp         || '',
         item_quantity:    item.item_quantity    || '',
+        item_sold:        item.item_sold        || '0',
         item_image:       item.item_image       || 'n/a',
       };
       setForm(f);
@@ -279,7 +280,7 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
                   </div>
                 </div>
 
-                <div className={styles.row3}>
+                <div className={styles.row4}>
                   <div className={styles.field}>
                     <label className={styles.label}>Acq. Price (₱)</label>
                     <input className={styles.input} type="number" step="0.01" min="0"

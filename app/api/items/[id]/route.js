@@ -58,6 +58,7 @@ export async function PUT(request, { params }) {
         item_srp         = ${parseFloat(body.item_srp) || 0},
         item_quantity    = ${parseInt(body.item_quantity) || 0},
         item_image       = ${image},
+        item_sold        = ${parseInt(body.item_sold) || 0},
         item_lastupdated = CURRENT_TIMESTAMP
       WHERE item_id = ${id}
       RETURNING *

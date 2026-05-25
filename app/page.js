@@ -161,7 +161,7 @@ export default function Home() {
     { label: 'Status' }, { label: 'Image' }, { label: 'Name' },
     { label: 'Type' }, { label: 'Category' }, { label: 'Quality' },
     { label: 'ACQ Price' }, { label: 'SRP' }, { label: 'Quantity' },
-    { label: 'Location' }, { label: 'Actions' },
+    { label: 'Sold Items' }, { label: 'Location' }, { label: 'Actions' },
   ];
 
   // ── Table rows ──────────────────────────────────────────────────────────
@@ -194,6 +194,7 @@ export default function Home() {
       <td className={`${styles.td} ${styles.priceCell}`}>₱{parseFloat(item.item_acqprice || 0).toLocaleString()}</td>
       <td className={`${styles.td} ${styles.priceCell}`}>₱{parseFloat(item.item_srp || 0).toLocaleString()}</td>
       <td className={`${styles.td} ${styles.qtyCell}`}>{item.item_quantity}</td>
+      <td className={`${styles.td} ${styles.qtyCell}`}>{item.item_sold || 0}</td>
       <td className={styles.td}>{item.item_location}</td>
       {/* Actions */}
       <td className={styles.td}>
