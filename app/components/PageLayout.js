@@ -105,6 +105,63 @@ export default function PageLayout({
         {/* Filter pills */}
         {filterPills && <div className={styles.filterPillsWrap}>{filterPills}</div>}
 
+        {/* Pagination */}
+        {totalPages !== undefined && (
+          <div className={styles.paginationBarTop}>
+            <div className={styles.paginationLeft}>
+              <span className={styles.paginationInfo}>
+                {total === 0 ? 'No results' : `Showing ${from}–${to} of ${total}`}
+              </span>
+              {onPageSizeChange && (
+                <div className={styles.pageSizeWrap}>
+                  <span className={styles.pageSizeLabel}>Show</span>
+                  <select
+                    className={styles.pageSizeSelect}
+                    value={pageSize}
+                    onChange={e => onPageSizeChange(parseInt(e.target.value))}
+                  >
+                    {pageSizes.map(s => <option key={s} value={s}>{s}</option>)}
+                  </select>
+                  <span className={styles.pageSizeLabel}>rows</span>
+                </div>
+              )}
+            </div>
+
+            <div className={styles.paginationControls}>
+              <button className={styles.pageBtn} onClick={() => onPageChange(0)} disabled={page === 0}>«</button>
+              <button className={styles.pageBtn} onClick={() => onPageChange(Math.max(0, page - 1))} disabled={page === 0}>‹ PREV</button>
+              <div className={styles.pageNumbers}>
+                {[...Array(totalPages)].map((_, i) => {
+                  if (i === 0 || i === totalPages - 1 || Math.abs(i - page) <= 1)
+                    return <button key={i} className={`${styles.pageNum} ${i === page ? styles.pageNumActive : ''}`} onClick={() => onPageChange(i)}>{i + 1}</button>;
+                  if (Math.abs(i - page) === 2)
+                    return <span key={i} className={styles.pageEllipsis}>…</span>;
+                  return null;
+                })}
+              </div>
+              <button className={styles.pageBtn} onClick={() => onPageChange(Math.min(totalPages - 1, page + 1))} disabled={page >= totalPages - 1}>NEXT ›</button>
+              <button className={styles.pageBtn} onClick={() => onPageChange(totalPages - 1)} disabled={page >= totalPages - 1}>»</button>
+
+              {totalPages > 1 && (
+                <form className={styles.pageJumpWrap} onSubmit={e => {
+                  e.preventDefault();
+                  const val = parseInt(e.target.pageJump.value);
+                  if (!isNaN(val) && val >= 1 && val <= totalPages) {
+                    onPageChange(val - 1);
+                    e.target.pageJump.value = '';
+                  }
+                }}>
+                  <span className={styles.pageSizeLabel}>Go to</span>
+                  <input name="pageJump" type="number" min={1} max={totalPages}
+                    className={styles.pageJumpInput} placeholder={page + 1} />
+                  <button type="submit" className={styles.pageJumpBtn}>Go</button>
+                </form>
+              )}
+            </div>
+          </div>
+        )}
+
+
         {/* Table */}
         <div className={styles.tableWrap}>
           <table className={styles.table}>
