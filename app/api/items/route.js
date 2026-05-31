@@ -149,7 +149,7 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Invalid dropdown value detected.' }, { status: 422 });
     }
 
-    const acqprice = parseFloat(acqprice) || 0;
+    const acqprice = parseFloat(item_acqprice) || 0;
     const srp      = parseFloat(item_srp) || 0;
     const quantity = parseInt(item_quantity) || 0;
 
@@ -161,7 +161,7 @@ export async function POST(request) {
       VALUES
         (${name}, ${title}, ${type}, ${description}, ${location},
          ${category}, ${quality}, ${size}, ${sticker},
-         ${parseFloat(item_acqprice) || 0}, ${srp}, ${quantity}, ${parseInt(body.item_sold) || 0}, ${image}, 'active')
+         ${parseFloat(acqprice) || 0}, ${srp}, ${quantity}, ${parseInt(body.item_sold) || 0}, ${image}, 'active')
       RETURNING *
     `;
 

@@ -98,7 +98,7 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
         item_quality:     item.item_quality     || 'N/A',
         item_size:        item.item_size        || 'N/A',
         item_sticker:     item.item_sticker     || 'N/A',
-        item_acqprice:    item.item_acqprice    || '',
+        item_acqprice:    item.item_acqprice    || '0',
         item_srp:         item.item_srp         || '',
         item_quantity:    item.item_quantity    || '',
         item_sold:        item.item_sold        || '0',
