@@ -12,7 +12,7 @@ import { useDebounce } from './lib/useDebounce';
 const PAGE_SIZES = [5, 10, 20, 50, 100];
 const DEFAULT_FILTERS = {
   type: '', category: '', quality: '', size: '', sticker: '',
-  sortBy: '', sortDir: 'ASC', dateFrom: '', dateTo: '',
+  sortBy: '', sortDir: 'DESC', dateFrom: '', dateTo: '',
 };
 
 export default function Home() {
@@ -78,7 +78,7 @@ export default function Home() {
       quality:   filters.quality  || '',
       size:      filters.size     || '',
       sticker:   filters.sticker  || '',
-      sort_by:   filters.sortBy   || 'item_dateadded',
+      sort_by:   filters.sortBy   || '',
       sort_dir:  filters.sortDir  || 'ASC',
       date_from: filters.dateFrom,
       date_to:   filters.dateTo,

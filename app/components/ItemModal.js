@@ -46,7 +46,7 @@ const EMPTY = {
   item_name: '', item_title: '', item_type: 'N/A', item_description: '',
   item_location: '', item_category: 'N/A', item_quality: 'N/A',
   item_size: 'N/A', item_sticker: 'N/A',
-  item_acqprice: '', item_srp: '', item_quantity: '', item_image: 'n/a',
+  item_acqprice: '', item_srp: '', item_quantity: '', item_sold: '', item_image: 'n/a',
 };
 
 // Convert Google Drive share link to direct image URL
@@ -98,10 +98,10 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
         item_quality:     item.item_quality     || 'N/A',
         item_size:        item.item_size        || 'N/A',
         item_sticker:     item.item_sticker     || 'N/A',
-        item_acqprice:    item.item_acqprice    || '0',
-        item_srp:         item.item_srp         || '',
-        item_quantity:    item.item_quantity    || '',
-        item_sold:        item.item_sold        || '0',
+        item_acqprice:    item.item_acqprice    || 0,
+        item_srp:         item.item_srp         || 0,
+        item_quantity:    item.item_quantity    || 0,
+        item_sold:        item.item_sold        || 0,
         item_image:       item.item_image       || 'n/a',
       };
       setForm(f);
@@ -193,6 +193,7 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
                   <ViewField label="Acq. Price"  value={item?.item_acqprice ? `₱${parseFloat(item.item_acqprice).toLocaleString()}` : '-'} />
                   <ViewField label="SRP"         value={item?.item_srp ? `₱${parseFloat(item.item_srp).toLocaleString()}` : '-'} />
                   <ViewField label="Quantity"    value={item?.item_quantity} />
+                  <ViewField label="Sold"        value={item?.item_sold} />
                   <ViewField label="Description" value={item?.item_description} wide />
                 </div>
                 {/* Computed Stats */}
@@ -295,6 +296,11 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
                     <label className={styles.label}>Quantity</label>
                     <input className={styles.input} type="number" min="0"
                       name="item_quantity" value={form.item_quantity} onChange={handleChange} placeholder="0" />
+                  </div>
+                  <div className={styles.field}>
+                    <label className={styles.label}>Sold</label>
+                    <input className={styles.input} type="number" min="0"
+                      name="item_sold" value={form.item_sold} onChange={handleChange} placeholder="0" />
                   </div>
                 </div>
 
