@@ -45,7 +45,7 @@ export default function Home() {
         size:     filters.size     || '',
         sticker:  filters.sticker  || '',
         sort_by:  filters.sortBy   || '',
-        sort_dir: filters.sortDir  || 'ASC',
+        sort_dir: filters.sortDir  || 'DESC',
       });
       const res  = await fetch(`/api/items?${params}`, { cache: 'no-store' });
       const json = await res.json();
