@@ -57,24 +57,24 @@ export default function PageLayout({
 
         {/* Page Head */}
         <div className={styles.pageHead}>
-          <div>
+          <div className={styles.pageTitleRow}>
             <h1 className={styles.pageTitle}>{title}</h1>
-            {subtitle && <p className={styles.pageSub}>{subtitle}</p>}
+            <div className={styles.pageHeadRight}>
+              {total !== undefined && (
+                <span className={styles.totalBadge}>{total} {totalLabel}</span>
+              )}
+              {viewOnly && (
+                <span className={styles.viewOnlyBadge}>
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="12" height="12">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  VIEW ONLY
+                </span>
+              )}
+            </div>
           </div>
-          <div className={styles.pageHeadRight}>
-            {total !== undefined && (
-              <span className={styles.totalBadge}>{total} {totalLabel}</span>
-            )}
-            {viewOnly && (
-              <span className={styles.viewOnlyBadge}>
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" width="12" height="12">
-                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                  <circle cx="12" cy="12" r="3"/>
-                </svg>
-                VIEW ONLY
-              </span>
-            )}
-          </div>
+          {subtitle && <p className={styles.pageSub}>{subtitle}</p>}
         </div>
 
         {/* Toolbar */}
@@ -168,7 +168,7 @@ export default function PageLayout({
             <thead>
               <tr>
                 {columns.map((col, i) => (
-                  <th key={i} className={styles.th}>{col.label}</th>
+                  <th key={i} className={`${styles.th} ${col.className || ""}`}>{col.label}</th>
                 ))}
               </tr>
             </thead>

@@ -12,3 +12,12 @@
   border: 1px solid var(--border); color: var(--accent); flex-shrink: 0;
 }
 .dateCell { font-family: var(--font-mono); font-size: 0.75rem; color: var(--muted); white-space: nowrap; }
+
+/* ── MOBILE ──────────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .td { padding: 10px 12px; }
+  .dateCell { font-size: 0.7rem; }
+}
+@media (max-width: 480px) {
+  .logId { display: none; }
+}

@@ -147,3 +147,28 @@
   text-underline-offset: 2px;
 }
 .clearAll:hover { color: var(--accent2); }
+
+/* ── MOBILE TABLE COLUMN COLLAPSE ────────────────────────────────────────── */
+/* On mobile: show Status, Name, SRP, Actions only */
+
+@media (max-width: 768px) {
+  /* Hide these columns on tablet and below */
+  .colImage,
+  .colType,
+  .colCategory,
+  .colQuality,
+  .colAcqPrice,
+  .colQty,
+  .colSold,
+  .colLocation { display: none; }
+
+  .td { padding: 10px 12px; }
+  .nameBtn { font-size: 0.8rem; }
+}
+
+@media (max-width: 480px) {
+  .td { padding: 8px 10px; font-size: 0.8rem; }
+  .badgeInStock,
+  .badgeOutOfStock { font-size: 0.6rem; padding: 2px 7px; }
+  .deleteBtn { padding: 4px 8px; font-size: 0.65rem; }
+}

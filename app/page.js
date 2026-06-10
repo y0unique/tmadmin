@@ -45,7 +45,7 @@ export default function Home() {
         size:     filters.size     || '',
         sticker:  filters.sticker  || '',
         sort_by:  filters.sortBy   || '',
-        sort_dir: filters.sortDir  || 'DESC',
+        sort_dir: filters.sortDir  || 'ASC',
       });
       const res  = await fetch(`/api/items?${params}`, { cache: 'no-store' });
       const json = await res.json();
@@ -79,7 +79,7 @@ export default function Home() {
       size:      filters.size     || '',
       sticker:   filters.sticker  || '',
       sort_by:   filters.sortBy   || '',
-      sort_dir:  filters.sortDir  || 'ASC',
+      sort_dir:  filters.sortDir  || 'DESC',
       date_from: filters.dateFrom,
       date_to:   filters.dateTo,
       search:    search || '',
@@ -158,10 +158,18 @@ export default function Home() {
 
   // ── Table columns ───────────────────────────────────────────────────────
   const columns = [
-    { label: 'Status' }, { label: 'Image' }, { label: 'Name' },
-    { label: 'Type' }, { label: 'Category' }, { label: 'Quality' },
-    { label: 'ACQ Price' }, { label: 'SRP' }, { label: 'Quantity' },
-    { label: 'Sold Items' }, { label: 'Location' }, { label: 'Actions' },
+    { label: 'Status' },
+    { label: 'Image',     className: styles.colImage },
+    { label: 'Name' },
+    { label: 'Type',      className: styles.colType },
+    { label: 'Category',  className: styles.colCategory },
+    { label: 'Quality',   className: styles.colQuality },
+    { label: 'ACQ Price', className: styles.colAcqPrice },
+    { label: 'SRP' },
+    { label: 'Quantity',  className: styles.colQty },
+    { label: 'Sold Items',className: styles.colSold },
+    { label: 'Location',  className: styles.colLocation },
+    { label: 'Actions' },
   ];
 
   // ── Table rows ──────────────────────────────────────────────────────────
@@ -175,7 +183,7 @@ export default function Home() {
         }
       </td>
       {/* Image */}
-      <td className={styles.td}>
+      <td className={`${styles.td} ${styles.colImage}`}>
         {item.item_image && item.item_image !== 'n/a'
           ? <img src={item.item_image} alt={item.item_name} className={styles.tableImg}
               onError={e => { e.target.style.display='none'; }} />
@@ -188,14 +196,14 @@ export default function Home() {
           {item.item_name}
         </button>
       </td>
-      <td className={styles.td}>{item.item_type}</td>
-      <td className={styles.td}>{item.item_category}</td>
-      <td className={styles.td}><span className={styles.qualityBadge}>{item.item_quality}</span></td>
-      <td className={`${styles.td} ${styles.priceCell}`}>₱{parseFloat(item.item_acqprice || 0).toLocaleString()}</td>
+      <td className={`${styles.td} ${styles.colType}`}>{item.item_type}</td>
+      <td className={`${styles.td} ${styles.colCategory}`}>{item.item_category}</td>
+      <td className={`${styles.td} ${styles.colQuality}`}><span className={styles.qualityBadge}>{item.item_quality}</span></td>
+      <td className={`${styles.td} ${styles.priceCell} ${styles.colAcqPrice}`}>₱{parseFloat(item.item_acqprice || 0).toLocaleString()}</td>
       <td className={`${styles.td} ${styles.priceCell}`}>₱{parseFloat(item.item_srp || 0).toLocaleString()}</td>
-      <td className={`${styles.td} ${styles.qtyCell}`}>{item.item_quantity}</td>
-      <td className={`${styles.td} ${styles.qtyCell}`}>{item.item_sold || 0}</td>
-      <td className={styles.td}>{item.item_location}</td>
+      <td className={`${styles.td} ${styles.qtyCell} ${styles.colQty}`}>{item.item_quantity}</td>
+      <td className={`${styles.td} ${styles.qtyCell} ${styles.colSold}`}>{item.item_sold || 0}</td>
+      <td className={`${styles.td} ${styles.colLocation}`}>{item.item_location}</td>
       {/* Actions */}
       <td className={styles.td}>
         <button

@@ -53,21 +53,35 @@ export default function ArchivedPage() {
   const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' }) : '-';
 
   const columns = [
-    { label: 'Name' }, { label: 'Type' }, { label: 'Category' },
-    { label: 'Quality' }, { label: 'SRP' }, { label: 'Qty' },
-    { label: 'Location' }, { label: 'Removed' }, { label: 'Action' },
+    { label: 'Image' },
+    { label: 'Name' },
+    { label: 'Type',    className: styles.colType },
+    { label: 'Category',className: styles.colCategory },
+    { label: 'Quality', className: styles.colQuality },
+    { label: 'SRP',     className: styles.colSrp },
+    { label: 'Qty',     className: styles.colQty },
+    { label: 'Location',className: styles.colLocation },
+    { label: 'Removed', className: styles.colRemoved },
+    { label: 'Action' },
   ];
 
   const rows = items.map((item) => (
     <>
+      <td className={styles.td}>
+        {item.item_image && item.item_image !== 'n/a'
+          ? <img src={item.item_image} alt={item.item_name} className={styles.tableImg}
+              onError={e => { e.target.style.display='none'; }} />
+          : <div className={styles.tableImgEmpty}>—</div>
+        }
+      </td>
       <td className={`${styles.td} ${styles.nameCell}`}>{item.item_name}</td>
-      <td className={styles.td}>{item.item_type}</td>
-      <td className={styles.td}>{item.item_category}</td>
-      <td className={styles.td}><span className={styles.qualityBadge}>{item.item_quality}</span></td>
-      <td className={`${styles.td} ${styles.priceCell}`}>₱{parseFloat(item.item_srp || 0).toLocaleString()}</td>
-      <td className={`${styles.td} ${styles.qtyCell}`}>{item.item_quantity}</td>
-      <td className={styles.td}>{item.item_location}</td>
-      <td className={`${styles.td} ${styles.dateCell}`}>{formatDate(item.item_lastupdated)}</td>
+      <td className={`${styles.td} ${styles.colType}`}>{item.item_type}</td>
+      <td className={`${styles.td} ${styles.colCategory}`}>{item.item_category}</td>
+      <td className={`${styles.td} ${styles.colQuality}`}><span className={styles.qualityBadge}>{item.item_quality}</span></td>
+      <td className={`${styles.td} ${styles.priceCell} ${styles.colSrp}`}>₱{parseFloat(item.item_srp || 0).toLocaleString()}</td>
+      <td className={`${styles.td} ${styles.qtyCell} ${styles.colQty}`}>{item.item_quantity}</td>
+      <td className={`${styles.td} ${styles.colLocation}`}>{item.item_location}</td>
+      <td className={`${styles.td} ${styles.dateCell} ${styles.colRemoved}`}>{formatDate(item.item_lastupdated)}</td>
       <td className={styles.td}>
         <button
           className={styles.restoreBtn}

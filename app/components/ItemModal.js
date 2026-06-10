@@ -49,6 +49,55 @@ const EMPTY = {
   item_acqprice: '', item_srp: '', item_quantity: '', item_sold: '', item_image: 'n/a',
 };
 
+function validate(form) {
+  const errors = {};
+  if (!form.item_name.trim())
+    errors.item_name = 'Name is required.';
+  else if (form.item_name.trim().length > 50)
+    errors.item_name = 'Name must be 50 characters or less.';
+  if (!form.item_title.trim())
+    errors.item_title = 'Title is required.';
+  else if (form.item_title.length > 100)
+    errors.item_title = 'Title must be 100 characters or less.';
+  if (form.item_type === 'N/A')
+    errors.item_type = 'Please select a Type.';
+  if (form.item_category === 'N/A')
+    errors.item_category = 'Please select a Category.';
+  if (form.item_quality === 'N/A')
+    errors.item_quality = 'Please select a Quality.';
+  if (form.item_size === 'N/A')
+    errors.item_size = 'Please select a Size.';
+  if (!form.item_location.trim())
+    errors.item_location = 'Location is required.';
+  const acq = parseFloat(form.item_acqprice);
+  if (form.item_acqprice === '' || isNaN(acq))
+    errors.item_acqprice = 'Acquisition price is required.';
+  else if (acq < 0)
+    errors.item_acqprice = 'Price cannot be negative.';
+  const srp = parseFloat(form.item_srp);
+  if (form.item_srp === '' || isNaN(srp))
+    errors.item_srp = 'SRP is required.';
+  else if (srp < 0)
+    errors.item_srp = 'SRP cannot be negative.';
+  else if (srp < acq && !isNaN(acq))
+    errors.item_srp = 'SRP should not be lower than Acq. Price.';
+  const qty = parseInt(form.item_quantity);
+  if (form.item_quantity === '' || isNaN(qty))
+    errors.item_quantity = 'Quantity is required.';
+  else if (qty < 0)
+    errors.item_quantity = 'Quantity cannot be negative.';
+  else if (qty > 99999)
+    errors.item_quantity = 'Max is 99,999.';
+  const sld = parseInt(form.item_sold);
+  if (form.item_sold === '' || isNaN(sld))
+    errors.item_sold = 'Sold quantity is required.';
+  else if (sld < 0)
+    errors.item_sold = 'Sold quantity cannot be negative.';
+  else if (sld > 99999)
+    errors.item_sold = 'Max is 99,999.';
+  return errors;
+}
+
 // Convert Google Drive share link to direct image URL
 function convertDriveLink(url) {
   if (!url) return url;
@@ -70,9 +119,14 @@ function ViewField({ label, value, wide }) {
   );
 }
 
-function Select({ name, value, onChange, options }) {
+function Select({ name, value, onChange, options, onFocus, className }) {
   return (
-    <select className={styles.input} name={name} value={value} onChange={onChange}>
+    <select
+      className={`${styles.input} ${className || ''}`}
+      name={name} value={value}
+      onChange={onChange}
+      onFocus={onFocus}
+    >
       {options.map(o => <option key={o} value={o}>{o}</option>)}
     </select>
   );
@@ -85,7 +139,11 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
   const [form, setForm]     = useState(EMPTY);
   const [saving, setSaving] = useState(false);
   const [imgSrc, setImgSrc] = useState('');
-
+  const [errors, setErrors]   = useState({});
+  const [touched, setTouched] = useState({});
+  const handleFocus  = (name) => setTouched(prev => ({ ...prev, [name]: true }));
+  const hasRedBorder = (name) => errors[name] && !touched[name];
+// https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQb1-lFrG-qnrbxPMmmtXcRFw0IQBJUMG8G4Q&s default image --- IGNORE ---
   useEffect(() => {
     if (item) {
       const f = {
@@ -119,28 +177,59 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
     if (name === 'item_image') setImgSrc(convertDriveLink(value));
   };
 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setSaving(true);
+  //   try {
+  //     const url    = isAdd ? '/api/items' : `/api/items/${item.item_id}`;
+  //     const method = isAdd ? 'POST' : 'PUT';
+  //     const payload = { ...form, item_image: convertDriveLink(form.item_image) };
+  //     const res    = await fetch(url, {
+  //       method,
+  //       headers: { 'Content-Type': 'application/json' },
+  //       body: JSON.stringify(payload),
+  //     });
+  //     const json = await res.json();
+  //     if (!res.ok) throw new Error(json.error || 'Failed to save');
+  //     toast({ message: isAdd ? 'Item added!' : 'Item updated!', type: 'success' });
+  //     onSaved();
+  //   } catch (err) {
+  //     toast({ message: err.message, type: 'error' });
+  //   } finally {
+  //     setSaving(false);
+  //   }
+  // };
+
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSaving(true);
-    try {
-      const url    = isAdd ? '/api/items' : `/api/items/${item.item_id}`;
-      const method = isAdd ? 'POST' : 'PUT';
-      const payload = { ...form, item_image: convertDriveLink(form.item_image) };
-      const res    = await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload),
-      });
-      const json = await res.json();
-      if (!res.ok) throw new Error(json.error || 'Failed to save');
-      toast({ message: isAdd ? 'Item added!' : 'Item updated!', type: 'success' });
-      onSaved();
-    } catch (err) {
-      toast({ message: err.message, type: 'error' });
-    } finally {
-      setSaving(false);
-    }
-  };
+  e.preventDefault();
+  const newErrors = validate(form);
+  setErrors(newErrors);
+  setTouched({});
+  if (Object.keys(newErrors).length > 0) {
+    const firstKey = Object.keys(newErrors)[0];
+    const el = document.querySelector(`[name="${firstKey}"]`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+  setSaving(true);
+  try {
+    const url    = isAdd ? '/api/items' : `/api/items/${item.item_id}`;
+    const method = isAdd ? 'POST' : 'PUT';
+    const res    = await fetch(url, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || 'Failed to save');
+    toast({ message: isAdd ? 'Item added!' : 'Item updated!', type: 'success' });
+    onSaved();
+  } catch (err) {
+    toast({ message: err.message, type: 'error' });
+  } finally {
+    setSaving(false);
+  }
+};
 
   const hasImage = imgSrc && imgSrc !== 'n/a';
 
@@ -182,11 +271,11 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
               /* VIEW MODE */
               <div className={styles.viewBody}>
                 <div className={styles.viewGrid}>
-                  <ViewField label="Quality"     value={item?.item_quality} />
+                  <ViewField label="Name"        value={item?.item_name} />
+                  <ViewField label="Title"       value={item?.item_title} />
                   <ViewField label="Type"        value={item?.item_type} />
-                  <ViewField label="Name"        value={item?.item_name} wide />
-                  <ViewField label="Title"       value={item?.item_title} wide />
                   <ViewField label="Category"    value={item?.item_category} />
+                  <ViewField label="Quality"     value={item?.item_quality} />
                   <ViewField label="Size"        value={item?.item_size} />
                   <ViewField label="Location"    value={item?.item_location} />
                   <ViewField label="Sticker"     value={item?.item_sticker} />
@@ -234,90 +323,254 @@ export default function ItemModal({ item, mode = 'add', onClose, onSaved }) {
             ) : (
               /* EDIT / ADD MODE */
               <form onSubmit={handleSubmit} className={styles.form} id="itemForm">
+                {Object.keys(errors).length > 0 && (
+                  <div className={styles.errorSummary}>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" width="15" height="15">
+                      <circle cx="12" cy="12" r="10"/>
+                      <line x1="12" y1="8" x2="12" y2="12"/>
+                      <line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    <span>{Object.keys(errors).length} field{Object.keys(errors).length > 1 ? 's need' : ' needs'} attention.</span>
+                  </div>
+                )}
                 <div className={styles.row}>
                   <div className={styles.field}>
-                    <label className={styles.label}>Name <span className={styles.req}>*</span></label>
-                    <input className={styles.input} name="item_name" value={form.item_name}
-                      onChange={handleChange} required placeholder="e.g. TONYTONY. CHOPPER #99" />
+                    <label className={styles.label}>
+                      Name <span className={styles.req}>*</span>
+                    </label>
+                    <input
+                      className={`${styles.input} ${
+                        hasRedBorder("item_name") ? styles.inputError : ""
+                      }`}
+                      name="item_name"
+                      value={form.item_name}
+                      onChange={handleChange}
+                      onFocus={() => handleFocus("item_name")}
+                      placeholder="e.g. TONYTONY. CHOPPER #99"
+                      maxLength={50}
+                    />
+                    {errors.item_name && (
+                      <span className={styles.fieldError}>{errors.item_name}</span>
+                    )}
                   </div>
+
                   <div className={styles.field}>
                     <label className={styles.label}>Title</label>
-                    <input className={styles.input} name="item_title" value={form.item_title}
-                      onChange={handleChange} placeholder="e.g. FUNKO POP" />
+                    <input
+                      className={`${styles.input} ${
+                        hasRedBorder("item_title") ? styles.inputError : ""
+                      }`}
+                      name="item_title"
+                      value={form.item_title}
+                      onChange={handleChange}
+                      onFocus={() => handleFocus("item_title")}
+                      placeholder="e.g. FUNKO POP"
+                      maxLength={100}
+                    />
+                    {errors.item_title && (
+                      <span className={styles.fieldError}>{errors.item_title}</span>
+                    )}
                   </div>
                 </div>
 
                 <div className={styles.row}>
                   <div className={styles.field}>
                     <label className={styles.label}>Type</label>
-                    <Select name="item_type" value={form.item_type} onChange={handleChange} options={ITEM_TYPES} />
+                    <Select
+                      name="item_type"
+                      value={form.item_type}
+                      onChange={handleChange}
+                      onFocus={() => handleFocus("item_type")}
+                      options={ITEM_TYPES}
+                      className={hasRedBorder("item_type") ? styles.inputError : ""}
+                    />
+                    {errors.item_type && (
+                      <span className={styles.fieldError}>{errors.item_type}</span>
+                    )}
                   </div>
+
                   <div className={styles.field}>
                     <label className={styles.label}>Category</label>
-                    <Select name="item_category" value={form.item_category} onChange={handleChange} options={ITEM_CATEGORIES} />
+                    <Select
+                      name="item_category"
+                      value={form.item_category}
+                      onChange={handleChange}
+                      onFocus={() => handleFocus("item_category")}
+                      options={ITEM_CATEGORIES}
+                      className={hasRedBorder("item_category") ? styles.inputError : ""}
+                    />
+                    {errors.item_category && (
+                      <span className={styles.fieldError}>{errors.item_category}</span>
+                    )}
                   </div>
                 </div>
 
                 <div className={styles.row}>
                   <div className={styles.field}>
                     <label className={styles.label}>Quality</label>
-                    <Select name="item_quality" value={form.item_quality} onChange={handleChange} options={ITEM_QUALITIES} />
+                    <Select
+                      name="item_quality"
+                      value={form.item_quality}
+                      onChange={handleChange}
+                      onFocus={() => handleFocus("item_quality")}
+                      options={ITEM_QUALITIES}
+                      className={hasRedBorder("item_quality") ? styles.inputError : ""}
+                    />
+                    {errors.item_quality && (
+                      <span className={styles.fieldError}>{errors.item_quality}</span>
+                    )}
                   </div>
+
                   <div className={styles.field}>
                     <label className={styles.label}>Size</label>
-                    <Select name="item_size" value={form.item_size} onChange={handleChange} options={ITEM_SIZES} />
+                    <Select
+                      name="item_size"
+                      value={form.item_size}
+                      onChange={handleChange}
+                      onFocus={() => handleFocus("item_size")}
+                      options={ITEM_SIZES}
+                      className={hasRedBorder("item_size") ? styles.inputError : ""}
+                    />
+                    {errors.item_size && (
+                      <span className={styles.fieldError}>{errors.item_size}</span>
+                    )}
                   </div>
                 </div>
 
                 <div className={styles.row}>
                   <div className={styles.field}>
                     <label className={styles.label}>Location</label>
-                    <input className={styles.input} name="item_location" value={form.item_location}
-                      onChange={handleChange} placeholder="e.g. Rack 7 Top" />
+                    <input
+                      className={`${styles.input} ${
+                        hasRedBorder("item_location") ? styles.inputError : ""
+                      }`}
+                      name="item_location"
+                      value={form.item_location}
+                      onChange={handleChange}
+                      onFocus={() => handleFocus("item_location")}
+                      placeholder="e.g. Rack 7 Top"
+                    />
+                    {errors.item_location && (
+                      <span className={styles.fieldError}>{errors.item_location}</span>
+                    )}
                   </div>
+
                   <div className={styles.field}>
                     <label className={styles.label}>Sticker</label>
-                    <Select name="item_sticker" value={form.item_sticker} onChange={handleChange} options={ITEM_STICKERS} />
+                    <Select
+                      name="item_sticker"
+                      value={form.item_sticker}
+                      onChange={handleChange}
+                      options={ITEM_STICKERS}
+                    />
                   </div>
                 </div>
 
-                <div className={styles.row4}>
+                <div className={styles.row}>
                   <div className={styles.field}>
                     <label className={styles.label}>Acq. Price (₱)</label>
-                    <input className={styles.input} type="number" step="0.01" min="0"
-                      name="item_acqprice" value={form.item_acqprice} onChange={handleChange} placeholder="0.00" />
+                    <input
+                      className={`${styles.input} ${
+                        hasRedBorder("item_acqprice") ? styles.inputError : ""
+                      }`}
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      name="item_acqprice"
+                      value={form.item_acqprice}
+                      onChange={handleChange}
+                      onFocus={() => handleFocus("item_acqprice")}
+                      placeholder="0.00"
+                    />
+                    {errors.item_acqprice && (
+                      <span className={styles.fieldError}>{errors.item_acqprice}</span>
+                    )}
                   </div>
+
                   <div className={styles.field}>
                     <label className={styles.label}>SRP (₱)</label>
-                    <input className={styles.input} type="number" step="0.01" min="0"
-                      name="item_srp" value={form.item_srp} onChange={handleChange} placeholder="0.00" />
+                    <input
+                      className={`${styles.input} ${
+                        hasRedBorder("item_srp") ? styles.inputError : ""
+                      }`}
+                      type="number"
+                      step="0.01"
+                      min="0"
+                      name="item_srp"
+                      value={form.item_srp}
+                      onChange={handleChange}
+                      onFocus={() => handleFocus("item_srp")}
+                      placeholder="0.00"
+                    />
+                    {errors.item_srp && (
+                      <span className={styles.fieldError}>{errors.item_srp}</span>
+                    )}
                   </div>
+
                   <div className={styles.field}>
                     <label className={styles.label}>Quantity</label>
-                    <input className={styles.input} type="number" min="0"
-                      name="item_quantity" value={form.item_quantity} onChange={handleChange} placeholder="0" />
+                    <input
+                      className={`${styles.input} ${
+                        hasRedBorder("item_quantity") ? styles.inputError : ""
+                      }`}
+                      type="number"
+                      min="0"
+                      name="item_quantity"
+                      value={form.item_quantity}
+                      onChange={handleChange}
+                      onFocus={() => handleFocus("item_quantity")}
+                      placeholder="0"
+                    />
+                    {errors.item_quantity && (
+                      <span className={styles.fieldError}>{errors.item_quantity}</span>
+                    )}
                   </div>
+
                   <div className={styles.field}>
                     <label className={styles.label}>Sold</label>
-                    <input className={styles.input} type="number" min="0"
-                      name="item_sold" value={form.item_sold} onChange={handleChange} placeholder="0" />
+                    <input
+                      className={`${styles.input} ${
+                        hasRedBorder("item_sold") ? styles.inputError : ""
+                      }`}
+                      type="number"
+                      min="0"
+                      name="item_sold"
+                      value={form.item_sold}
+                      onChange={handleChange}
+                      onFocus={() => handleFocus("item_sold")}
+                      placeholder="0"
+                    />
+                    {errors.item_sold && (
+                      <span className={styles.fieldError}>{errors.item_sold}</span>
+                    )}
                   </div>
                 </div>
 
                 <div className={styles.field}>
                   <label className={styles.label}>Description</label>
-                  <textarea className={styles.textarea} name="item_description" value={form.item_description}
-                    onChange={handleChange} rows={2} placeholder="Additional details..." />
+                  <textarea
+                    className={styles.textarea}
+                    name="item_description"
+                    value={form.item_description}
+                    onChange={handleChange}
+                    rows={2}
+                    placeholder="Additional details..."
+                  />
                 </div>
 
                 <div className={styles.field}>
                   <label className={styles.label}>Image Link</label>
-                  <input className={styles.input} name="item_image" value={form.item_image === 'n/a' ? '' : form.item_image}
-                    onChange={handleChange} placeholder="https://drive.google.com/file/d/..." />
-                  <span className={styles.hint}>Paste a Public link - it will be converted automatically</span>
+                  <input
+                    className={styles.input}
+                    name="item_image"
+                    value={form.item_image === "n/a" ? "" : form.item_image}
+                    onChange={handleChange}
+                    placeholder="https://drive.google.com/file/d/..."
+                  />
+                  <span className={styles.hint}>
+                    Paste a Public link - it will be converted automatically
+                  </span>
                 </div>
-
-
               </form>
             )}
           </div>
